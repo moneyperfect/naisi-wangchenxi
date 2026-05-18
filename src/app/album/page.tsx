@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { getPhotos } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PhotoCard } from "@/components/album/PhotoCard";
 import { AlbumUploadButton } from "./AlbumUploadButton";

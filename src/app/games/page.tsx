@@ -2,6 +2,8 @@ import { getQuizQuestions } from "@/lib/actions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { QuizGame } from "@/components/games/QuizGame";
 
+export const dynamic = "force-dynamic";
+
 export default async function GamesPage() {
   const questions = await getQuizQuestions();
 

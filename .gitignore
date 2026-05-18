@@ -43,3 +43,9 @@ dev.db-journal
 # uploads
 public/uploads/*
 !public/uploads/.gitkeep
+
+# supabase
+supabase/.temp/
+
+# claude
+.claude/

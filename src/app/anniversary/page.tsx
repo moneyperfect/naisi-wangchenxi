@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { getAnniversaries } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { AnniversaryCard } from "@/components/anniversary/AnniversaryCard";
 import { AnniversaryAddButton } from "./AnniversaryAddButton";

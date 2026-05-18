@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "./db";
+import { supabase } from "./supabase";
 import { revalidatePath } from "next/cache";
 
 // Anniversary
@@ -70,6 +71,13 @@ export async function addPhoto(data: {
 }
 
 export async function deletePhoto(id: number) {
+  const photo = await db.photo.findUnique({ where: { id } });
+  if (photo?.url) {
+    const path = photo.url.split("/photos/")[1];
+    if (path) {
+      await supabase.storage.from("photos").remove([path]);
+    }
+  }
   await db.photo.delete({ where: { id } });
   revalidatePath("/album");
 }

@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { getTimelineEvents } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TimelineEvent } from "@/components/timeline/TimelineEvent";
 import { TimelineAddButton } from "./TimelineAddButton";

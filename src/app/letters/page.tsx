@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { getLetters } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { LetterCard } from "@/components/letters/LetterCard";
 import { LetterAddButton } from "./LetterAddButton";

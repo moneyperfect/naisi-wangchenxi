@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { getDiaryEntries } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { DiaryEntry } from "@/components/diary/DiaryEntry";
 import { DiaryAddButton } from "./DiaryAddButton";
