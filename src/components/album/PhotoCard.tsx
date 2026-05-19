@@ -74,7 +74,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
           <img
             src={photo.url}
             alt={photo.caption || "照片"}
-            className="max-w-[calc(100vw-2rem)] max-h-[85vh] object-contain rounded-xl select-none"
+            className="max-w-[calc(100vw-2rem)] max-h-[85vh] w-auto h-auto object-contain rounded-xl select-none"
             draggable={false}
           />
           {photo.caption && (
