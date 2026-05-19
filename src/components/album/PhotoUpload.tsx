@@ -1,157 +1,256 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ImagePlus, Loader2, X, Check, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { addPhoto } from "@/lib/actions";
 
-const MAX_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_DIMENSION = 2000;
+const JPEG_QUALITY = 0.8;
+
+interface SelectedFile {
+  id: string;
+  file: File;
+  preview: string;
+  caption: string;
+  status: "pending" | "uploading" | "done" | "error";
+}
 
 interface PhotoUploadProps {
   onUploaded?: () => void;
 }
 
+async function compressImage(file: File): Promise<File> {
+  const bitmap = await createImageBitmap(file);
+  let { width, height } = bitmap;
+
+  if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+    const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
+    width = Math.round(width * ratio);
+    height = Math.round(height * ratio);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const blob = await new Promise<Blob>((resolve) =>
+    canvas.toBlob((b) => resolve(b!), "image/jpeg", JPEG_QUALITY)
+  );
+
+  return new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+    type: "image/jpeg",
+  });
+}
+
 export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [captions, setCaptions] = useState<Record<number, string>>({});
+  const [items, setItems] = useState<SelectedFile[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  function handleFileSelect(files: FileList | null) {
+  useEffect(() => {
+    return () => {
+      items.forEach((item) => URL.revokeObjectURL(item.preview));
+    };
+  }, []);
+
+  async function handleFileSelect(files: FileList | null) {
     if (!files) return;
-    const valid: File[] = [];
+    const newItems: SelectedFile[] = [];
+
     for (const file of Array.from(files)) {
       if (!ALLOWED_TYPES.includes(file.type)) {
         toast.error(`${file.name}: 不支持的文件格式`);
         continue;
       }
-      if (file.size > MAX_SIZE) {
-        toast.error(`${file.name}: 文件太大（最大 10MB）`);
-        continue;
+
+      try {
+        const compressed = await compressImage(file);
+        newItems.push({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          file: compressed,
+          preview: URL.createObjectURL(compressed),
+          caption: "",
+          status: "pending",
+        });
+      } catch {
+        toast.error(`${file.name}: 处理失败`);
       }
-      valid.push(file);
     }
-    if (valid.length > 0) {
-      setSelectedFiles((prev) => [...prev, ...valid]);
+
+    if (newItems.length > 0) {
+      setItems((prev) => [...prev, ...newItems]);
     }
   }
 
   async function handleUpload() {
-    if (selectedFiles.length === 0) return;
+    if (items.length === 0) return;
     setUploading(true);
     let successCount = 0;
 
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      const formData = new FormData();
-      formData.append("file", file);
+    for (const item of items) {
+      if (item.status === "done") continue;
+
+      setItems((prev) =>
+        prev.map((it) =>
+          it.id === item.id ? { ...it, status: "uploading" as const } : it
+        )
+      );
 
       try {
+        const formData = new FormData();
+        formData.append("file", item.file);
         const res = await fetch("/api/upload", { method: "POST", body: formData });
         const data = await res.json();
+
         if (data.url) {
           await addPhoto({
             url: data.url,
-            caption: captions[i] || undefined,
+            caption: item.caption || undefined,
           });
           successCount++;
+          setItems((prev) =>
+            prev.map((it) =>
+              it.id === item.id ? { ...it, status: "done" as const } : it
+            )
+          );
+        } else {
+          throw new Error(data.error || "上传失败");
         }
       } catch {
-        toast.error(`${file.name} 上传失败`);
+        setItems((prev) =>
+          prev.map((it) =>
+            it.id === item.id ? { ...it, status: "error" as const } : it
+          )
+        );
+        toast.error(`${item.file.name} 上传失败`);
       }
     }
 
     if (successCount > 0) {
       toast.success(`成功上传 ${successCount} 张照片`);
     }
-    setSelectedFiles([]);
-    setCaptions({});
-    setUploading(false);
-    onUploaded?.();
+
+    const hasErrors = items.some((it) => it.status === "error");
+    if (!hasErrors) {
+      items.forEach((it) => URL.revokeObjectURL(it.preview));
+      setItems([]);
+      setUploading(false);
+      onUploaded?.();
+    } else {
+      setUploading(false);
+    }
   }
 
-  function removeFile(index: number) {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-    setCaptions((prev) => {
-      const next = { ...prev };
-      delete next[index];
-      return next;
+  function removeItem(id: string) {
+    setItems((prev) => {
+      const item = prev.find((it) => it.id === id);
+      if (item) URL.revokeObjectURL(item.preview);
+      return prev.filter((it) => it.id !== id);
     });
+  }
+
+  function updateCaption(id: string, caption: string) {
+    setItems((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, caption } : it))
+    );
   }
 
   return (
     <div className="space-y-4">
-      {selectedFiles.length === 0 ? (
+      {items.length === 0 ? (
         <div
           onClick={() => fileRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            handleFileSelect(e.dataTransfer.files);
-          }}
           className="border-2 border-dashed border-warm-300/50 rounded-2xl p-8 text-center cursor-pointer hover:border-warm-400 hover:bg-warm-100/30 transition-all"
         >
           <ImagePlus className="mx-auto text-warm-400 mb-2" size={32} />
-          <p className="text-sm text-stone-500">点击或拖拽照片到这里</p>
+          <p className="text-sm text-stone-500">点击选择照片</p>
+          <p className="text-xs text-stone-400 mt-1">支持 JPG、PNG、WebP、GIF</p>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="max-h-60 overflow-y-auto space-y-2">
-            {selectedFiles.map((file, i) => (
+            {items.map((item) => (
               <div
-                key={i}
+                key={item.id}
                 className="flex items-center gap-3 bg-white rounded-xl p-2 border border-warm-200/30"
               >
                 <img
-                  src={URL.createObjectURL(file)}
+                  src={item.preview}
                   alt=""
                   className="w-12 h-12 rounded-lg object-cover shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-stone-500 truncate">{file.name}</p>
+                  <p className="text-xs text-stone-500 truncate">
+                    {(item.file.size / 1024 / 1024).toFixed(1)}MB
+                  </p>
                   <input
                     type="text"
-                    value={captions[i] || ""}
-                    onChange={(e) =>
-                      setCaptions((prev) => ({ ...prev, [i]: e.target.value }))
-                    }
+                    value={item.caption}
+                    onChange={(e) => updateCaption(item.id, e.target.value)}
                     placeholder="写点备注..."
                     className="w-full text-xs mt-1 px-2 py-1 rounded-lg bg-warm-50 border border-warm-200/50 focus:outline-none focus:border-warm-400 transition-all"
                   />
                 </div>
-                <button
-                  onClick={() => removeFile(i)}
-                  className="text-stone-300 hover:text-red-400 text-xs shrink-0"
-                >
-                  移除
-                </button>
+                {item.status === "done" ? (
+                  <Check size={16} className="text-green-500 shrink-0" />
+                ) : item.status === "error" ? (
+                  <AlertCircle size={16} className="text-red-400 shrink-0" />
+                ) : item.status === "uploading" ? (
+                  <Loader2 size={16} className="animate-spin text-warm-400 shrink-0" />
+                ) : (
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="text-stone-300 hover:text-red-400 shrink-0"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
-          <button
-            onClick={handleUpload}
-            disabled={uploading}
-            className="w-full py-2.5 rounded-xl bg-warm-500 text-white text-sm font-medium hover:bg-warm-600 transition-colors disabled:opacity-50"
-          >
-            {uploading ? (
-              <span className="inline-flex items-center gap-2">
-                <Loader2 size={16} className="animate-spin" />
-                上传中...
-              </span>
-            ) : (
-              `上传 ${selectedFiles.length} 张照片`
-            )}
-          </button>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex-1 py-2.5 rounded-xl border border-warm-300 text-warm-600 text-sm font-medium hover:bg-warm-50 transition-colors disabled:opacity-50"
+            >
+              继续添加
+            </button>
+            <button
+              onClick={handleUpload}
+              disabled={uploading || items.every((it) => it.status === "done")}
+              className="flex-1 py-2.5 rounded-xl bg-warm-500 text-white text-sm font-medium hover:bg-warm-600 transition-colors disabled:opacity-50"
+            >
+              {uploading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  上传中...
+                </span>
+              ) : items.some((it) => it.status === "error") ? (
+                "重试失败项"
+              ) : (
+                `上传 ${items.filter((it) => it.status === "pending").length} 张照片`
+              )}
+            </button>
+          </div>
         </div>
       )}
       <input
         ref={fileRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
         multiple
         className="hidden"
-        onChange={(e) => handleFileSelect(e.target.files)}
+        onChange={(e) => {
+          handleFileSelect(e.target.files);
+          e.target.value = "";
+        }}
       />
     </div>
   );
