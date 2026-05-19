@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getQuizQuestions, getGameScores } from "@/lib/actions";
+import { getGameScores } from "@/lib/actions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { GamesClient } from "@/components/games/GamesClient";
 import { GamesSkeleton } from "@/components/games/GamesSkeleton";
@@ -7,11 +7,8 @@ import { GamesSkeleton } from "@/components/games/GamesSkeleton";
 export const dynamic = "force-dynamic";
 
 async function GamesContent() {
-  const [questions, scores] = await Promise.all([
-    getQuizQuestions(),
-    getGameScores(),
-  ]);
-  return <GamesClient questions={questions} scores={scores} />;
+  const scores = await getGameScores();
+  return <GamesClient scores={scores} />;
 }
 
 export default function GamesPage() {

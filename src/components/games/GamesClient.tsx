@@ -2,18 +2,17 @@
 
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { QuizGame } from "./QuizGame";
+import { WhackAMole } from "./WhackAMole";
 import { ScoreBoard } from "./ScoreBoard";
 import { ScoreCreateButton } from "./ScoreCreateButton";
-import type { QuizQuestion, GameScore } from "@/types";
+import type { GameScore } from "@/types";
 
 interface GamesClientProps {
-  questions: QuizQuestion[];
   scores: GameScore[];
 }
 
-export function GamesClient({ questions, scores }: GamesClientProps) {
-  const [tab, setTab] = useState<"quiz" | "score">("quiz");
+export function GamesClient({ scores }: GamesClientProps) {
+  const [tab, setTab] = useState<"game" | "score">("game");
   const [scoreList, setScoreList] = useState(scores);
 
   const refreshScores = useCallback(async () => {
@@ -22,20 +21,22 @@ export function GamesClient({ questions, scores }: GamesClientProps) {
     setScoreList(fresh);
   }, []);
 
+  const latestGame = scoreList[0] ?? null;
+
   return (
     <div>
       {/* Tab Switcher */}
       <div className="flex bg-stone-100 rounded-full p-0.5 mb-6">
         <button
-          onClick={() => setTab("quiz")}
+          onClick={() => setTab("game")}
           className={cn(
             "flex-1 py-2 rounded-full text-sm font-medium transition-all",
-            tab === "quiz"
+            tab === "game"
               ? "bg-white text-stone-700 shadow-sm"
               : "text-stone-400 hover:text-stone-600"
           )}
         >
-          默契测试
+          打地鼠
         </button>
         <button
           onClick={() => setTab("score")}
@@ -51,8 +52,13 @@ export function GamesClient({ questions, scores }: GamesClientProps) {
       </div>
 
       {/* Content */}
-      {tab === "quiz" ? (
-        <QuizGame questions={questions} />
+      {tab === "game" ? (
+        <WhackAMole
+          bestA={latestGame?.playerA ?? 0}
+          bestB={latestGame?.playerB ?? 0}
+          gameId={latestGame?.id ?? null}
+          onScoreSaved={refreshScores}
+        />
       ) : (
         <div>
           <div className="flex justify-end mb-3">
