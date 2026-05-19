@@ -2,6 +2,22 @@
 
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { Suspense } from "react";
+import { LoadingAnimation } from "@/components/animations/LoadingAnimation";
+
+/* ─────────────────────────────────────────
+   页面切换模板
+   · 切换时立即响应（warm overlay）
+   · 内容未就绪时显示加载动画
+   ───────────────────────────────────────── */
+
+function PageLoader() {
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+      <LoadingAnimation size={72} text="正在努力加载中…" />
+    </div>
+  );
+}
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,7 +55,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           }}
           transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          {children}
+          <Suspense fallback={<PageLoader />}>{children}</Suspense>
         </motion.div>
       </motion.div>
     </AnimatePresence>
