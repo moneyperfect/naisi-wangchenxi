@@ -12,9 +12,14 @@ type Player = "playerA" | "playerB";
 
 const DURATION = 30;
 const GRID_SIZE = 9;
-const MOLE_INTERVAL_MIN = 600;
+const MOLE_INTERVAL_MIN = 500;
 const MOLE_INTERVAL_MAX = 1400;
-const MOLE_VISIBLE_MS = 1200;
+const MOLE_VISIBLE_MIN = 400;
+const MOLE_VISIBLE_MAX = 1200;
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
 
 interface WhackAMoleProps {
   bestA: number;
@@ -35,6 +40,7 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
   const moleTimerRef = useRef<number | null>(null);
   const startTimeRef = useRef(0);
   const scoreRef = useRef(0);
+  const timeLeftRef = useRef(DURATION);
 
   const clearTimers = useCallback(() => {
     if (timerRef.current) {
@@ -54,30 +60,34 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
   function spawnMole() {
     const pos = Math.floor(Math.random() * GRID_SIZE);
     setMolePos(pos);
+    const ratio = timeLeftRef.current / DURATION;
+    const visibleMs = lerp(MOLE_VISIBLE_MIN, MOLE_VISIBLE_MAX, ratio);
     moleTimerRef.current = window.setTimeout(() => {
       setMolePos(null);
       if (phase === "playing") {
         const delay =
-          MOLE_INTERVAL_MIN +
-          Math.random() * (MOLE_INTERVAL_MAX - MOLE_INTERVAL_MIN);
+          lerp(MOLE_INTERVAL_MIN, MOLE_INTERVAL_MAX, ratio) +
+          Math.random() * 200;
         moleTimerRef.current = window.setTimeout(() => spawnMole(), delay);
       }
-    }, MOLE_VISIBLE_MS);
+    }, visibleMs);
   }
 
   function startGame() {
     setScore(0);
     scoreRef.current = 0;
     setTimeLeft(DURATION);
+    timeLeftRef.current = DURATION;
     setMolePos(null);
     setPhase("playing");
     startTimeRef.current = performance.now();
 
-    // Timer via rAF
     function tick() {
       const elapsed = (performance.now() - startTimeRef.current) / 1000;
       const remaining = Math.max(0, DURATION - elapsed);
-      setTimeLeft(Math.ceil(remaining));
+      const rounded = Math.ceil(remaining);
+      setTimeLeft(rounded);
+      timeLeftRef.current = rounded;
 
       if (remaining <= 0) {
         setPhase("result");
@@ -88,9 +98,8 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
     }
     timerRef.current = requestAnimationFrame(tick);
 
-    // Start spawning moles
     const delay =
-      MOLE_INTERVAL_MIN + Math.random() * (MOLE_INTERVAL_MAX - MOLE_INTERVAL_MIN);
+      MOLE_INTERVAL_MAX + Math.random() * 200;
     moleTimerRef.current = window.setTimeout(() => spawnMole(), delay);
   }
 
@@ -102,11 +111,11 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
       setHitAnim(pos);
       setTimeout(() => setHitAnim(null), 300);
 
-      // Clear current mole timer and schedule next
       if (moleTimerRef.current) clearTimeout(moleTimerRef.current);
+      const ratio = timeLeftRef.current / DURATION;
       const delay =
-        MOLE_INTERVAL_MIN +
-        Math.random() * (MOLE_INTERVAL_MAX - MOLE_INTERVAL_MIN);
+        lerp(MOLE_INTERVAL_MIN, MOLE_INTERVAL_MAX, ratio) +
+        Math.random() * 200;
       moleTimerRef.current = window.setTimeout(() => spawnMole(), delay);
     }
   }

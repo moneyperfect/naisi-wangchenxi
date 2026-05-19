@@ -62,7 +62,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
 
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 overflow-hidden"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 overflow-hidden touch-none"
           onClick={() => setLightbox(false)}
         >
           <button
@@ -74,7 +74,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
           <img
             src={photo.url}
             alt={photo.caption || "照片"}
-            className="max-w-full max-h-[85vh] object-contain rounded-xl select-none"
+            className="max-w-[calc(100vw-2rem)] max-h-[85vh] object-contain rounded-xl select-none"
             draggable={false}
           />
           {photo.caption && (

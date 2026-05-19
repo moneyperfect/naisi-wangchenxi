@@ -6,6 +6,7 @@ import {
   Dices,
   Gamepad2,
   MessageSquare,
+  Heart,
 } from "lucide-react";
 
 const features = [
@@ -31,8 +32,8 @@ const features = [
     color: "bg-violet-50 text-violet-500",
   },
   {
-    href: "/games",
-    icon: Gamepad2,
+    href: "/quiz",
+    icon: Heart,
     title: "默契测试",
     description: "测测我们的默契",
     color: "bg-emerald-50 text-emerald-500",
@@ -43,6 +44,13 @@ const features = [
     title: "吐槽墙",
     description: "有什么不满说出来",
     color: "bg-orange-50 text-orange-500",
+  },
+  {
+    href: "/games",
+    icon: Gamepad2,
+    title: "小游戏",
+    description: "打地鼠比比分",
+    color: "bg-rose-50 text-rose-500",
   },
 ];
 

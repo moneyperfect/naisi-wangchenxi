@@ -23,7 +23,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             onClick={onClose}
           />
           <motion.div
-            className="relative bg-warm-50 rounded-3xl p-6 w-full max-w-md max-h-[85vh] overflow-y-auto shadow-xl border border-warm-200/50"
+            className="relative bg-warm-50 rounded-3xl p-6 w-full max-w-md max-h-[85vh] overflow-y-auto overflow-x-hidden shadow-xl border border-warm-200/50 mx-auto"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}

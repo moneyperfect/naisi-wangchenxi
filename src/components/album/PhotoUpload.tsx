@@ -166,7 +166,7 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-hidden">
       {items.length === 0 ? (
         <div
           onClick={() => fileRef.current?.click()}
