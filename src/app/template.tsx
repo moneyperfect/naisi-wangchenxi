@@ -1,63 +1,92 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Suspense } from "react";
-import { LoadingAnimation } from "@/components/animations/LoadingAnimation";
+import { LoveLoading } from "@/components/LoveLoading";
 
-/* ─────────────────────────────────────────
-   页面切换模板
-   · 切换时立即响应（warm overlay）
-   · 内容未就绪时显示加载动画
-   ───────────────────────────────────────── */
+const MIN_ROUTE_LOADING_MS = 1000;
 
-function PageLoader() {
-  return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-      <LoadingAnimation size={72} text="正在努力加载中…" />
-    </div>
-  );
-}
+let hasRenderedInitialRoute = false;
 
-export default function Template({ children }: { children: React.ReactNode }) {
+export default function Template({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [showRouteLoading, setShowRouteLoading] = useState(false);
+
+  useEffect(() => {
+    if (!hasRenderedInitialRoute) {
+      hasRenderedInitialRoute = true;
+      return;
+    }
+
+    if (sessionStorage.getItem("skip-next-route-loading") === "1") {
+      sessionStorage.removeItem("skip-next-route-loading");
+      setShowRouteLoading(false);
+      return;
+    }
+
+    setShowRouteLoading(true);
+    const timer = window.setTimeout(() => {
+      setShowRouteLoading(false);
+    }, MIN_ROUTE_LOADING_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        className="relative"
-        initial="enter"
-        animate="visible"
-        exit="exit"
-      >
-        {/* warm overlay that sweeps in/out */}
+    <>
+      <AnimatePresence mode="wait">
         <motion.div
-          className="fixed inset-0 z-50 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(255,107,74,0.12) 0%, rgba(255,247,245,0.6) 100%)",
-          }}
-          variants={{
-            enter: { opacity: 1 },
-            visible: { opacity: 0 },
-            exit: { opacity: 1 },
-          }}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
-        />
-
-        {/* page content */}
-        <motion.div
-          variants={{
-            enter: { opacity: 0, scale: 0.985, filter: "blur(6px)" },
-            visible: { opacity: 1, scale: 1, filter: "blur(0px)" },
-            exit: { opacity: 0, scale: 1.01, filter: "blur(4px)" },
-          }}
-          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          key={pathname}
+          className="relative"
+          initial="enter"
+          animate="visible"
+          exit="exit"
         >
-          <Suspense fallback={<PageLoader />}>{children}</Suspense>
+          {/* warm overlay that sweeps in/out */}
+          <motion.div
+            className="fixed inset-0 z-50 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(255,107,74,0.12) 0%, rgba(255,247,245,0.6) 100%)",
+            }}
+            variants={{
+              enter: { opacity: 1 },
+              visible: { opacity: 0 },
+              exit: { opacity: 1 },
+            }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+          />
+
+          {/* page content */}
+          <motion.div
+            variants={{
+              enter: { opacity: 0, scale: 0.99 },
+              visible: { opacity: 1, scale: 1 },
+              exit: { opacity: 0, scale: 1.005 },
+            }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {children}
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showRouteLoading && (
+          <motion.div
+            key="minimum-route-loading"
+            className="fixed inset-0 z-[60]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            <LoveLoading fullScreen />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

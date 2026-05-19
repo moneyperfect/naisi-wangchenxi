@@ -20,6 +20,7 @@ export async function proxy(req: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/icons") ||
+    pathname.startsWith("/animations") ||
     pathname.startsWith("/apple-touch-icon") ||
     pathname === "/manifest.json" ||
     pathname === "/sw.js"

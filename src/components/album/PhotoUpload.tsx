@@ -166,7 +166,7 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
   }
 
   return (
-    <div className="space-y-4 overflow-hidden">
+    <div className="min-h-0 overflow-hidden">
       {items.length === 0 ? (
         <div
           onClick={() => fileRef.current?.click()}
@@ -177,17 +177,17 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
           <p className="text-xs text-stone-400 mt-1">支持 JPG、PNG、WebP、GIF</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          <div className="max-h-60 overflow-y-auto space-y-2">
+        <div className="flex max-h-[calc(100dvh-9rem)] min-h-0 flex-col gap-3">
+          <div className="min-h-0 max-h-[calc(100dvh-17rem)] space-y-2 overflow-y-auto pr-1">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 bg-white rounded-xl p-2 border border-warm-200/30"
+                className="flex min-w-0 items-center gap-3 rounded-xl border border-warm-200/30 bg-white p-2"
               >
                 <img
                   src={item.preview}
                   alt=""
-                  className="w-12 h-12 rounded-lg object-cover shrink-0"
+                  className="h-12 w-12 shrink-0 rounded-lg object-cover"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-stone-500 truncate">
@@ -198,7 +198,7 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
                     value={item.caption}
                     onChange={(e) => updateCaption(item.id, e.target.value)}
                     placeholder="写点备注..."
-                    className="w-full text-xs mt-1 px-2 py-1 rounded-lg bg-warm-50 border border-warm-200/50 focus:outline-none focus:border-warm-400 transition-all"
+                    className="mt-1 w-full min-w-0 rounded-lg border border-warm-200/50 bg-warm-50 px-2 py-1 text-xs transition-all focus:border-warm-400 focus:outline-none"
                   />
                 </div>
                 {item.status === "done" ? (
@@ -219,21 +219,21 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
             ))}
           </div>
 
-          <div className="flex gap-2">
+          <div className="grid shrink-0 grid-cols-2 gap-2">
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="flex-1 py-2.5 rounded-xl border border-warm-300 text-warm-600 text-sm font-medium hover:bg-warm-50 transition-colors disabled:opacity-50"
+              className="min-w-0 truncate rounded-xl border border-warm-300 py-2.5 text-sm font-medium text-warm-600 transition-colors hover:bg-warm-50 disabled:opacity-50"
             >
               继续添加
             </button>
             <button
               onClick={handleUpload}
               disabled={uploading || items.every((it) => it.status === "done")}
-              className="flex-1 py-2.5 rounded-xl bg-warm-500 text-white text-sm font-medium hover:bg-warm-600 transition-colors disabled:opacity-50"
+              className="min-w-0 truncate rounded-xl bg-warm-500 py-2.5 text-sm font-medium text-white transition-colors hover:bg-warm-600 disabled:opacity-50"
             >
               {uploading ? (
-                <span className="inline-flex items-center gap-2">
+                <span className="inline-flex min-w-0 items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
                   上传中...
                 </span>

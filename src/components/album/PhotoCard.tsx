@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { deletePhoto } from "@/lib/actions";
@@ -14,14 +15,19 @@ export function PhotoCard({ photo }: PhotoCardProps) {
   const [lightbox, setLightbox] = useState(false);
 
   useEffect(() => {
-    if (lightbox) {
-      document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
-    }
+    if (!lightbox) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
   }, [lightbox]);
 
   async function handleDelete() {
     if (!window.confirm("确定要删除这张照片吗？")) return;
+
     try {
       await deletePhoto(photo.id);
       toast.success("照片已删除");
@@ -30,60 +36,79 @@ export function PhotoCard({ photo }: PhotoCardProps) {
     }
   }
 
+  const lightboxContent =
+    lightbox && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={photo.caption || "照片预览"}
+            className="fixed inset-0 z-[70] flex flex-col overflow-hidden bg-stone-900/85 backdrop-blur-sm"
+            onClick={() => setLightbox(false)}
+          >
+            <button
+              className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+              onClick={() => setLightbox(false)}
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex min-h-0 flex-1 items-center justify-center p-4 pb-3 pt-16">
+              <img
+                src={photo.url}
+                alt={photo.caption || "照片"}
+                className="max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain"
+                draggable={false}
+                onClick={(event) => event.stopPropagation()}
+              />
+            </div>
+
+            {photo.caption && (
+              <div
+                className="shrink-0 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <p className="mx-auto line-clamp-3 max-w-md break-words rounded-2xl bg-stone-900/60 px-4 py-2 text-center text-sm text-white backdrop-blur-sm">
+                  {photo.caption}
+                </p>
+              </div>
+            )}
+          </div>,
+          document.body
+        )
+      : null;
+
   return (
     <>
       <div
-        className="group relative rounded-2xl overflow-hidden cursor-pointer break-inside-avoid"
+        className="group relative cursor-pointer break-inside-avoid overflow-hidden rounded-2xl"
         onClick={() => setLightbox(true)}
       >
         <img
           src={photo.url}
           alt={photo.caption || "照片"}
-          className="w-full h-auto object-cover"
+          className="h-auto w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div className="absolute bottom-0 left-0 right-0 p-3">
             {photo.caption && (
-              <p className="text-white text-sm line-clamp-2">{photo.caption}</p>
+              <p className="line-clamp-2 text-sm text-white">{photo.caption}</p>
             )}
           </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete();
-            }}
-            className="absolute top-2 right-2 p-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-red-500/80 transition-colors"
-          >
-            <Trash2 size={14} />
-          </button>
         </div>
+        <button
+          onClick={(event) => {
+            event.stopPropagation();
+            handleDelete();
+          }}
+          className="absolute right-2 top-2 rounded-full bg-stone-900/30 p-1.5 text-white opacity-100 backdrop-blur-sm transition hover:bg-red-500/80 sm:opacity-0 sm:group-hover:opacity-100"
+        >
+          <Trash2 size={14} />
+        </button>
       </div>
 
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 overflow-hidden touch-none"
-          onClick={() => setLightbox(false)}
-        >
-          <button
-            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            onClick={() => setLightbox(false)}
-          >
-            <X size={20} />
-          </button>
-          <img
-            src={photo.url}
-            alt={photo.caption || "照片"}
-            className="max-w-[calc(100vw-2rem)] max-h-[85vh] w-auto h-auto object-contain rounded-xl select-none"
-            draggable={false}
-          />
-          {photo.caption && (
-            <p className="absolute bottom-8 text-white text-center text-sm bg-stone-900/60 backdrop-blur-sm px-4 py-2 rounded-full max-w-[80vw]">
-              {photo.caption}
-            </p>
-          )}
-        </div>
-      )}
+      {lightboxContent}
     </>
   );
 }

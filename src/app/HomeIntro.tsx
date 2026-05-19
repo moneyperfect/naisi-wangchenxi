@@ -5,8 +5,19 @@ import { LoveLockVideoTransition } from "@/components/animations/LoveLockVideoTr
 
 export function HomeIntro({ children }: { children: React.ReactNode }) {
   const [skip, setSkip] = useState(false);
+  const [autoPlayIntro, setAutoPlayIntro] = useState(false);
 
   useEffect(() => {
+    const shouldAutoPlay = sessionStorage.getItem("intro-autoplay") === "1";
+    if (shouldAutoPlay) {
+      sessionStorage.removeItem("intro-autoplay");
+      sessionStorage.removeItem("skip-next-app-loading");
+      sessionStorage.removeItem("skip-next-route-loading");
+      setAutoPlayIntro(true);
+      setSkip(false);
+      return;
+    }
+
     const seen = sessionStorage.getItem("intro-seen");
     if (seen) setSkip(true);
   }, []);
@@ -15,6 +26,7 @@ export function HomeIntro({ children }: { children: React.ReactNode }) {
 
   return (
     <LoveLockVideoTransition
+      autoPlay={autoPlayIntro}
       onAnimationComplete={() => {
         sessionStorage.setItem("intro-seen", "1");
       }}

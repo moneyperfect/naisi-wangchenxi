@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Heart, Lock } from "lucide-react";
 import { COUPLE } from "@/lib/constants";
 
@@ -9,7 +9,6 @@ function GateForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from") || "/";
 
@@ -27,8 +26,16 @@ function GateForm() {
       });
 
       if (res.ok) {
-        router.push(from);
-        router.refresh();
+        sessionStorage.setItem("skip-next-app-loading", "1");
+        sessionStorage.setItem("skip-next-route-loading", "1");
+
+        if (from === "/") {
+          sessionStorage.removeItem("intro-seen");
+          sessionStorage.setItem("intro-autoplay", "1");
+        }
+
+        window.location.assign(from);
+        return;
       } else {
         const data = await res.json();
         setError(data.error || "密码不对哦");
