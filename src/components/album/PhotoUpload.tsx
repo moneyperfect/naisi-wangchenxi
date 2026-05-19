@@ -51,12 +51,17 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [items, setItems] = useState<SelectedFile[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const itemsRef = useRef<SelectedFile[]>([]);
 
   useEffect(() => {
     return () => {
-      items.forEach((item) => URL.revokeObjectURL(item.preview));
+      itemsRef.current.forEach((item) => URL.revokeObjectURL(item.preview));
     };
   }, []);
+
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
 
   async function handleFileSelect(files: FileList | null) {
     if (!files) return;

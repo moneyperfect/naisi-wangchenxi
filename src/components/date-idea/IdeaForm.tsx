@@ -38,8 +38,8 @@ export function IdeaForm({ onClose }: IdeaFormProps) {
       });
       toast.success("约会点子已添加");
       onClose();
-    } catch {
-      toast.error("添加失败，请重试");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "添加失败，请重试");
     } finally {
       setLoading(false);
     }

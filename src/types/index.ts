@@ -103,3 +103,12 @@ export interface Rant {
 export type StoryItem =
   | (DiaryEntry & { type: "diary" })
   | (TimelineEvent & { type: "milestone" });
+
+export interface GameScore {
+  id: number;
+  playerA: number;
+  playerB: number;
+  gameName: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

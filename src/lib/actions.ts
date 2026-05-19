@@ -579,3 +579,63 @@ export async function deleteRant(id: number) {
   if (error) throw error;
   revalidatePath("/rant");
 }
+
+// GameScore
+export async function getGameScores() {
+  const sb = createServerClient();
+  const { data, error } = await sb
+    .from("GameScore")
+    .select("*")
+    .order("updatedAt", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((g) => ({
+    ...g,
+    createdAt: toDate(g.createdAt),
+    updatedAt: toDate(g.updatedAt),
+  }));
+}
+
+export async function createGame(gameName: string) {
+  const sb = createServerClient();
+  const { error } = await sb.from("GameScore").insert({ gameName });
+  if (error) throw error;
+  revalidatePath("/games");
+}
+
+export async function updateGameScore(
+  id: number,
+  player: "playerA" | "playerB",
+  delta: number
+) {
+  const sb = createServerClient();
+  const { data, error } = await sb
+    .from("GameScore")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) throw error;
+  const newScore = Math.max(0, (data[player] ?? 0) + delta);
+  const { error: updateError } = await sb
+    .from("GameScore")
+    .update({ [player]: newScore, updatedAt: new Date().toISOString() })
+    .eq("id", id);
+  if (updateError) throw updateError;
+  revalidatePath("/games");
+}
+
+export async function resetGameScore(id: number) {
+  const sb = createServerClient();
+  const { error } = await sb
+    .from("GameScore")
+    .update({ playerA: 0, playerB: 0, updatedAt: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+  revalidatePath("/games");
+}
+
+export async function deleteGame(id: number) {
+  const sb = createServerClient();
+  const { error } = await sb.from("GameScore").delete().eq("id", id);
+  if (error) throw error;
+  revalidatePath("/games");
+}

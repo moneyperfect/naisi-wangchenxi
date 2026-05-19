@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { deletePhoto } from "@/lib/actions";
@@ -12,6 +12,13 @@ interface PhotoCardProps {
 
 export function PhotoCard({ photo }: PhotoCardProps) {
   const [lightbox, setLightbox] = useState(false);
+
+  useEffect(() => {
+    if (lightbox) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
+    }
+  }, [lightbox]);
 
   async function handleDelete() {
     if (!window.confirm("确定要删除这张照片吗？")) return;
@@ -55,11 +62,11 @@ export function PhotoCard({ photo }: PhotoCardProps) {
 
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 overflow-hidden"
           onClick={() => setLightbox(false)}
         >
           <button
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
             onClick={() => setLightbox(false)}
           >
             <X size={20} />
@@ -67,10 +74,11 @@ export function PhotoCard({ photo }: PhotoCardProps) {
           <img
             src={photo.url}
             alt={photo.caption || "照片"}
-            className="max-w-full max-h-[85vh] object-contain rounded-xl"
+            className="max-w-full max-h-[85vh] object-contain rounded-xl select-none"
+            draggable={false}
           />
           {photo.caption && (
-            <p className="absolute bottom-8 text-white text-center text-sm bg-stone-900/60 backdrop-blur-sm px-4 py-2 rounded-full">
+            <p className="absolute bottom-8 text-white text-center text-sm bg-stone-900/60 backdrop-blur-sm px-4 py-2 rounded-full max-w-[80vw]">
               {photo.caption}
             </p>
           )}

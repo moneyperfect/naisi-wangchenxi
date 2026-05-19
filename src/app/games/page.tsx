@@ -1,20 +1,23 @@
 import { Suspense } from "react";
-import { getQuizQuestions } from "@/lib/actions";
+import { getQuizQuestions, getGameScores } from "@/lib/actions";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { QuizGame } from "@/components/games/QuizGame";
+import { GamesClient } from "@/components/games/GamesClient";
 import { GamesSkeleton } from "@/components/games/GamesSkeleton";
 
 export const dynamic = "force-dynamic";
 
 async function GamesContent() {
-  const questions = await getQuizQuestions();
-  return <QuizGame questions={questions} />;
+  const [questions, scores] = await Promise.all([
+    getQuizQuestions(),
+    getGameScores(),
+  ]);
+  return <GamesClient questions={questions} scores={scores} />;
 }
 
 export default function GamesPage() {
   return (
     <div>
-      <PageHeader title="默契测试" showBack />
+      <PageHeader title="小游戏" showBack />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<GamesSkeleton />}>
           <GamesContent />
