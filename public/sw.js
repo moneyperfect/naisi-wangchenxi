@@ -1,4 +1,4 @@
-const CACHE_NAME = "couples-v3";
+const CACHE_NAME = "couples-v4";
 const PRECACHE = [
   "/",
   "/manifest.json",

@@ -43,11 +43,11 @@ export function PhotoCard({ photo }: PhotoCardProps) {
             role="dialog"
             aria-modal="true"
             aria-label={photo.caption || "照片预览"}
-            className="fixed inset-0 z-[70] flex flex-col overflow-hidden bg-stone-900/85 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] flex flex-col overflow-hidden bg-gradient-to-br from-cream/95 via-warm-50/95 to-warm-100/95 backdrop-blur-sm"
             onClick={() => setLightbox(false)}
           >
             <button
-              className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+              className="absolute right-4 top-4 z-10 rounded-full bg-cream/85 p-2 text-stone-600 shadow-sm transition-colors hover:bg-warm-100"
               onClick={() => setLightbox(false)}
             >
               <X size={20} />
@@ -57,7 +57,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
               <img
                 src={photo.url}
                 alt={photo.caption || "照片"}
-                className="max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain"
+                className="max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain shadow-xl shadow-stone-900/10"
                 draggable={false}
                 onClick={(event) => event.stopPropagation()}
               />
@@ -68,7 +68,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
                 className="shrink-0 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
                 onClick={(event) => event.stopPropagation()}
               >
-                <p className="mx-auto line-clamp-3 max-w-md break-words rounded-2xl bg-stone-900/60 px-4 py-2 text-center text-sm text-white backdrop-blur-sm">
+                <p className="mx-auto max-h-[28dvh] max-w-md overflow-y-auto break-words rounded-2xl border border-warm-200/70 bg-cream/95 px-4 py-3 text-left text-sm leading-6 text-stone-700 shadow-lg shadow-stone-900/10 backdrop-blur-sm">
                   {photo.caption}
                 </p>
               </div>
@@ -90,10 +90,12 @@ export function PhotoCard({ photo }: PhotoCardProps) {
           className="h-auto w-full object-cover"
           loading="lazy"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-warm-100/95 via-warm-50/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div className="absolute bottom-0 left-0 right-0 p-3">
             {photo.caption && (
-              <p className="line-clamp-2 text-sm text-white">{photo.caption}</p>
+              <p className="line-clamp-2 rounded-xl bg-cream/90 px-3 py-2 text-sm leading-5 text-stone-700 shadow-sm backdrop-blur-sm">
+                {photo.caption}
+              </p>
             )}
           </div>
         </div>

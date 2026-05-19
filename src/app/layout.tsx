@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Serif_SC, Noto_Sans_SC } from "next/font/google";
 import { Navigation } from "@/components/layout/Navigation";
 import { FloatingHearts } from "@/components/effects/FloatingHearts";
+import { InitialLoadingOverlay } from "@/components/effects/InitialLoadingOverlay";
 import { MusicPlayer } from "@/components/effects/MusicPlayer";
 import { RegisterSW } from "@/components/effects/RegisterSW";
 import { Toaster } from "sonner";
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-cream font-sans">
         <FloatingHearts />
         <main className="pb-20">{children}</main>
+        <InitialLoadingOverlay />
         <Navigation />
         <MusicPlayer />
         <Toaster

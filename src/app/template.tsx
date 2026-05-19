@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoveLoading } from "@/components/LoveLoading";
 
-const MIN_ROUTE_LOADING_MS = 1000;
+const MIN_ROUTE_LOADING_MS = 1200;
 
 let hasRenderedInitialRoute = false;
 
