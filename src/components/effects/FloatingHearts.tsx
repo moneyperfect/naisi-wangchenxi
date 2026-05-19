@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Heart } from "lucide-react";
 
 function seededRandom(seed: number) {
@@ -9,17 +10,37 @@ function seededRandom(seed: number) {
 }
 
 export function FloatingHearts() {
+  const pathname = usePathname();
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setVisible(false);
+      return;
+    }
+
+    const onVisibility = () => {
+      setVisible(!document.hidden);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    setVisible(!document.hidden);
+
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [pathname]);
+
   const particles = useMemo(() => {
-    return Array.from({ length: 12 }, (_, i) => ({
+    return Array.from({ length: 6 }, (_, i) => ({
       id: i,
       left: `${seededRandom(i * 7 + 1) * 80 + 10}%`,
       delay: `${seededRandom(i * 13 + 3) * 10}s`,
       duration: `${10 + seededRandom(i * 17 + 5) * 8}s`,
       size: 10 + Math.floor(seededRandom(i * 23 + 7) * 10),
       opacity: 0.15 + seededRandom(i * 31 + 11) * 0.2,
-      isHeart: i < 9,
+      isHeart: i < 5,
     }));
   }, []);
+
+  if (!visible) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">

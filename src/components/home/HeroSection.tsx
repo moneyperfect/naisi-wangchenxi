@@ -1,10 +1,11 @@
 import { COUPLE } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Heart } from "lucide-react";
+import { LoveQuote } from "./LoveQuote";
 
 export function HeroSection() {
   return (
-    <div className="text-center pt-12 pb-4 px-4">
+    <div className="text-center pt-12 pb-2 px-4">
       <div className="inline-flex items-center gap-2 text-warm-400 mb-4">
         <div className="h-px w-12 bg-warm-300/50" />
         <Heart size={16} fill="currentColor" />
@@ -18,6 +19,7 @@ export function HeroSection() {
       <p className="text-sm text-stone-500">
         {formatDate(COUPLE.startDate)} 在一起
       </p>
+      <LoveQuote />
     </div>
   );
 }

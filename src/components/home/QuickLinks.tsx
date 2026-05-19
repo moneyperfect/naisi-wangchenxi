@@ -1,17 +1,23 @@
 import Link from "next/link";
-import { Calendar, Image, Clock, Mail, Gamepad2, BookHeart } from "lucide-react";
+import {
+  BookOpen,
+  CalendarHeart,
+  Image,
+  MessageCircleHeart,
+  Sparkles,
+} from "lucide-react";
 
 const links = [
   {
-    href: "/diary",
-    icon: BookHeart,
-    title: "日记",
-    desc: "日常点滴",
-    color: "bg-pink-50 text-pink-500",
+    href: "/story",
+    icon: BookOpen,
+    title: "我们的故事",
+    desc: "日常与重要节点",
+    color: "bg-warm-50 text-warm-500",
   },
   {
     href: "/anniversary",
-    icon: Calendar,
+    icon: CalendarHeart,
     title: "纪念日",
     desc: "重要的日子",
     color: "bg-rose-50 text-rose-500",
@@ -24,25 +30,25 @@ const links = [
     color: "bg-amber-50 text-amber-500",
   },
   {
-    href: "/timeline",
-    icon: Clock,
-    title: "时间线",
-    desc: "我们的故事",
-    color: "bg-emerald-50 text-emerald-500",
-  },
-  {
-    href: "/letters",
-    icon: Mail,
-    title: "情书",
+    href: "/notes",
+    icon: MessageCircleHeart,
+    title: "心里话",
     desc: "想对你说",
     color: "bg-sky-50 text-sky-500",
   },
   {
-    href: "/games",
-    icon: Gamepad2,
-    title: "游戏",
-    desc: "测测默契",
+    href: "/wishlist",
+    icon: Sparkles,
+    title: "心愿清单",
+    desc: "想一起做的事",
     color: "bg-violet-50 text-violet-500",
+  },
+  {
+    href: "/more",
+    icon: MessageCircleHeart,
+    title: "更多",
+    desc: "随机约会·今日一问",
+    color: "bg-emerald-50 text-emerald-500",
   },
 ];
 
@@ -54,7 +60,7 @@ export function QuickLinks() {
           <Link
             key={href}
             href={href}
-            className="group bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-warm-200/30 hover:border-warm-300/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="group bg-white/60 backdrop-blur-sm rounded-3xl p-5 border border-warm-200/30 hover:border-warm-300/50 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             <div className={`inline-flex p-2.5 rounded-xl ${color} mb-3`}>
               <Icon size={20} />

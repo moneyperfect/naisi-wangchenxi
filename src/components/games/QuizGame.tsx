@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { QuestionCard } from "./QuestionCard";
 import { ResultCard } from "./ResultCard";
+import { QuestionForm } from "./QuestionForm";
 import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { COUPLE } from "@/lib/constants";
+import { Gamepad2, Plus } from "lucide-react";
 import type { QuizQuestion } from "@/types";
 
 type Phase = "selecting" | "answering" | "result";
@@ -18,6 +22,7 @@ export function QuizGame({ questions }: QuizGameProps) {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [partner, setPartner] = useState<"A" | "B">("A");
+  const [addOpen, setAddOpen] = useState(false);
 
   function handleAnswer(answer: string) {
     const newAnswers = [...answers, answer];
@@ -34,6 +39,27 @@ export function QuizGame({ questions }: QuizGameProps) {
     setPhase("selecting");
     setCurrentQ(0);
     setAnswers([]);
+  }
+
+  if (questions.length === 0) {
+    return (
+      <>
+        <EmptyState
+          icon={<Gamepad2 size={32} />}
+          title="题库为空"
+          description="先添加几道题目，再来测默契吧"
+          action={
+            <Button onClick={() => setAddOpen(true)}>
+              <Plus size={16} />
+              添加题目
+            </Button>
+          }
+        />
+        <Modal isOpen={addOpen} onClose={() => setAddOpen(false)} title="添加题目">
+          <QuestionForm onClose={() => setAddOpen(false)} />
+        </Modal>
+      </>
+    );
   }
 
   if (phase === "selecting") {
@@ -65,6 +91,17 @@ export function QuizGame({ questions }: QuizGameProps) {
         <p className="text-center text-xs text-stone-400">
           共 {questions.length} 道题，测测你有多了解对方
         </p>
+        <div className="text-center">
+          <button
+            onClick={() => setAddOpen(true)}
+            className="text-xs text-warm-400 hover:text-warm-500 transition-colors"
+          >
+            + 添加更多题目
+          </button>
+        </div>
+        <Modal isOpen={addOpen} onClose={() => setAddOpen(false)} title="添加题目">
+          <QuestionForm onClose={() => setAddOpen(false)} />
+        </Modal>
       </div>
     );
   }

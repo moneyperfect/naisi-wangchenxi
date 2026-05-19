@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Serif_SC, Noto_Sans_SC } from "next/font/google";
 import { Navigation } from "@/components/layout/Navigation";
 import { FloatingHearts } from "@/components/effects/FloatingHearts";
-import { PageTransition } from "@/components/effects/PageTransition";
 import { MusicPlayer } from "@/components/effects/MusicPlayer";
 import { RegisterSW } from "@/components/effects/RegisterSW";
 import { Toaster } from "sonner";
@@ -26,15 +25,22 @@ export const metadata: Metadata = {
   title: "我们的故事",
   description: "乃斯 & 王晨曦 的爱情小世界",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "我们的故事",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#c4854e",
+  themeColor: "#ff6b4a",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -47,19 +53,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN" className={`${serif.variable} ${sans.variable}`}>
-      <body className="min-h-screen bg-warm-50 font-sans">
+      <body className="min-h-screen bg-cream font-sans">
         <FloatingHearts />
-        <main className="pb-20">
-          <PageTransition>{children}</PageTransition>
-        </main>
+        <main className="pb-20">{children}</main>
         <Navigation />
         <MusicPlayer />
         <Toaster
           position="bottom-center"
           toastOptions={{
             style: {
-              background: "#fdf8f4",
-              border: "1px solid #f0dcc8",
+              background: "#fff7f5",
+              border: "1px solid #ffd5cc",
               color: "#44403c",
               borderRadius: "12px",
             },

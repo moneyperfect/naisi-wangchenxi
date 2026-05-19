@@ -49,3 +49,5 @@ supabase/.temp/
 
 # claude
 .claude/
+
+.vercel
