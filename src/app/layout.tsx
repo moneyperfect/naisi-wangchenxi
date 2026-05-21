@@ -24,7 +24,7 @@ const sans = Noto_Sans_SC({
 
 export const metadata: Metadata = {
   title: "我们的故事",
-  description: "乃斯 & 王晨曦 的爱情小世界",
+  description: "乃斯 & 晨曦 的爱情小世界",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",

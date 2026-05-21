@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-乃斯 & 王晨曦 的私密情侣网站，部署在 Vercel，域名为 nascx.xyz。
+乃斯 & 晨曦 的私密情侣网站，部署在 Vercel，域名为 nascx.xyz。
 通过共享密码门保护，两人各有一个密码（`SITE_PASSWORD_A` / `SITE_PASSWORD_B`）。
 
 ## 技术栈
@@ -73,7 +73,7 @@ DIRECT_URL            Supabase 直连串
 NEXT_PUBLIC_SUPABASE_URL     Supabase 项目 URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY  Supabase anon key
 SITE_PASSWORD_A       乃斯的密码
-SITE_PASSWORD_B       王晨曦的密码
+SITE_PASSWORD_B       晨曦的密码
 ```
 
 ## 开发命令
@@ -93,7 +93,7 @@ npm run start    # 生产运行
 ## 注意事项
 
 - Server Actions 中用 `revalidatePath()` 刷新缓存
-- `author` 字段是 UI 切换（乃斯/王晨曦），不是真实认证用户
+- `author` 字段是 UI 切换（乃斯/晨曦），不是真实认证用户
 - 照片上传走 `/api/upload`，存储在 Supabase Storage 的 `photos` bucket
 - 所有 Supabase 表的 RLS 已禁用（通过 proxy 层做访问控制）
 - 构建时如有 TypeScript 错误，先检查类型定义是否匹配数据库 schema
