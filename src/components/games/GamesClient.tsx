@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { WhackAMole } from "./WhackAMole";
 import { ScoreBoard } from "./ScoreBoard";
-import { ScoreCreateButton } from "./ScoreCreateButton";
 import type { GameScore } from "@/types";
 
 interface GamesClientProps {
@@ -47,7 +46,7 @@ export function GamesClient({ scores }: GamesClientProps) {
               : "text-stone-400 hover:text-stone-600"
           )}
         >
-          计分板
+          最高记录
         </button>
       </div>
 
@@ -56,16 +55,10 @@ export function GamesClient({ scores }: GamesClientProps) {
         <WhackAMole
           bestA={latestGame?.playerA ?? 0}
           bestB={latestGame?.playerB ?? 0}
-          gameId={latestGame?.id ?? null}
           onScoreSaved={refreshScores}
         />
       ) : (
-        <div>
-          <div className="flex justify-end mb-3">
-            <ScoreCreateButton onCreated={refreshScores} />
-          </div>
-          <ScoreBoard scores={scoreList} onRefresh={refreshScores} />
-        </div>
+        <ScoreBoard scores={scoreList} />
       )}
     </div>
   );

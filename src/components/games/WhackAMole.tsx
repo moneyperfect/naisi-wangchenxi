@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Heart, Trophy, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { COUPLE } from "@/lib/constants";
-import { updateGameScore } from "@/lib/actions";
+import { saveWhackAMoleBestScore } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 type Phase = "idle" | "playing" | "result";
@@ -13,29 +13,24 @@ type Player = "playerA" | "playerB";
 const DURATION = 30;
 const GRID_SIZE = 16;
 const GRID_COLUMNS = 4;
-const MOLE_INTERVAL_MIN = 320;
-const MOLE_INTERVAL_MAX = 850;
-const MOLE_VISIBLE_MIN = 220;
-const MOLE_VISIBLE_MAX = 650;
-
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
-}
+const MOLE_VISIBLE_MS = 420;
+const MOLE_RESPAWN_MS = 520;
+const MOLE_RESPAWN_JITTER_MS = 120;
+const QUICK_RESPAWN_MS = 180;
 
 interface WhackAMoleProps {
   bestA: number;
   bestB: number;
-  gameId: number | null;
   onScoreSaved: () => void;
 }
 
-export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMoleProps) {
+export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [player, setPlayer] = useState<Player>("playerA");
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(DURATION);
-  const [molePos, setMolePos] = useState<number | null>(null);
-  const [hitAnim, setHitAnim] = useState<number | null>(null);
+  const [molePositions, setMolePositions] = useState<number[]>([]);
+  const [hitAnim, setHitAnim] = useState<number[]>([]);
 
   const timerRef = useRef<number | null>(null);
   const moleTimerRef = useRef<number | null>(null);
@@ -43,6 +38,7 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
   const scoreRef = useRef(0);
   const timeLeftRef = useRef(DURATION);
   const phaseRef = useRef<Phase>("idle");
+  const activePositionsRef = useRef<number[]>([]);
 
   const clearTimers = useCallback(() => {
     if (timerRef.current) {
@@ -63,20 +59,41 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
     phaseRef.current = phase;
   }, [phase]);
 
-  function spawnMole() {
-    const pos = Math.floor(Math.random() * GRID_SIZE);
-    setMolePos(pos);
-    const ratio = timeLeftRef.current / DURATION;
-    const visibleMs = lerp(MOLE_VISIBLE_MIN, MOLE_VISIBLE_MAX, ratio);
+  function setActivePositions(positions: number[]) {
+    activePositionsRef.current = positions;
+    setMolePositions(positions);
+  }
+
+  function getTargetCount() {
+    const elapsed = DURATION - timeLeftRef.current;
+    if (elapsed >= 20) return 4;
+    if (elapsed >= 10) return 3;
+    return 2;
+  }
+
+  function pickPositions(count: number) {
+    const positions = new Set<number>();
+    while (positions.size < Math.min(count, GRID_SIZE)) {
+      positions.add(Math.floor(Math.random() * GRID_SIZE));
+    }
+    return Array.from(positions);
+  }
+
+  function scheduleNextSpawn(delay = MOLE_RESPAWN_MS + Math.random() * MOLE_RESPAWN_JITTER_MS) {
+    if (moleTimerRef.current) clearTimeout(moleTimerRef.current);
+    moleTimerRef.current = window.setTimeout(() => spawnMoles(), delay);
+  }
+
+  function spawnMoles() {
+    if (phaseRef.current !== "playing") return;
+
+    setActivePositions(pickPositions(getTargetCount()));
     moleTimerRef.current = window.setTimeout(() => {
-      setMolePos(null);
+      setActivePositions([]);
       if (phaseRef.current === "playing") {
-        const delay =
-          lerp(MOLE_INTERVAL_MIN, MOLE_INTERVAL_MAX, ratio) +
-          Math.random() * 120;
-        moleTimerRef.current = window.setTimeout(() => spawnMole(), delay);
+        scheduleNextSpawn();
       }
-    }, visibleMs);
+    }, MOLE_VISIBLE_MS);
   }
 
   function startGame() {
@@ -84,7 +101,8 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
     scoreRef.current = 0;
     setTimeLeft(DURATION);
     timeLeftRef.current = DURATION;
-    setMolePos(null);
+    setActivePositions([]);
+    setHitAnim([]);
     phaseRef.current = "playing";
     setPhase("playing");
     startTimeRef.current = performance.now();
@@ -99,38 +117,37 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
       if (remaining <= 0) {
         phaseRef.current = "result";
         setPhase("result");
-        setMolePos(null);
+        setActivePositions([]);
         return;
       }
       timerRef.current = requestAnimationFrame(tick);
     }
     timerRef.current = requestAnimationFrame(tick);
 
-    const delay = MOLE_INTERVAL_MAX + Math.random() * 120;
-    moleTimerRef.current = window.setTimeout(() => spawnMole(), delay);
+    scheduleNextSpawn(520);
   }
 
   function handleHit(pos: number) {
-    if (pos === molePos) {
+    if (activePositionsRef.current.includes(pos)) {
       scoreRef.current += 1;
       setScore(scoreRef.current);
-      setMolePos(null);
-      setHitAnim(pos);
-      setTimeout(() => setHitAnim(null), 300);
+      setHitAnim((current) => [...current, pos]);
+      setTimeout(() => {
+        setHitAnim((current) => current.filter((item) => item !== pos));
+      }, 260);
 
-      if (moleTimerRef.current) clearTimeout(moleTimerRef.current);
-      const ratio = timeLeftRef.current / DURATION;
-      const delay =
-        lerp(MOLE_INTERVAL_MIN, MOLE_INTERVAL_MAX, ratio) +
-        Math.random() * 120;
-      moleTimerRef.current = window.setTimeout(() => spawnMole(), delay);
+      const nextPositions = activePositionsRef.current.filter((item) => item !== pos);
+      setActivePositions(nextPositions);
+
+      if (nextPositions.length === 0) {
+        scheduleNextSpawn(QUICK_RESPAWN_MS);
+      }
     }
   }
 
   async function saveScore() {
-    if (!gameId) return;
     try {
-      await updateGameScore(gameId, player, score);
+      await saveWhackAMoleBestScore(player, score);
       onScoreSaved();
     } catch {
       toast.error("保存分数失败");
@@ -281,8 +298,8 @@ export function WhackAMole({ bestA, bestB, gameId, onScoreSaved }: WhackAMolePro
         style={{ gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))` }}
       >
         {Array.from({ length: GRID_SIZE }).map((_, i) => {
-          const isMole = molePos === i;
-          const isHit = hitAnim === i;
+          const isMole = molePositions.includes(i);
+          const isHit = hitAnim.includes(i);
           return (
             <button
               key={i}

@@ -135,6 +135,17 @@ export async function addPhoto(data: {
   revalidatePath("/album");
 }
 
+export async function updatePhotoCaption(id: number, caption: string) {
+  const sb = createServerClient();
+  const cleanCaption = caption.trim();
+  const { error } = await sb
+    .from("Photo")
+    .update({ caption: cleanCaption || null })
+    .eq("id", id);
+  if (error) throw error;
+  revalidatePath("/album");
+}
+
 export async function deletePhoto(id: number) {
   const sb = createServerClient();
   const { data: photo } = await sb
@@ -581,6 +592,8 @@ export async function deleteRant(id: number) {
 }
 
 // GameScore
+const WHACK_A_MOLE_GAME_NAME = "打地鼠最高纪录";
+
 export async function getGameScores() {
   const sb = createServerClient();
   const { data, error } = await sb
@@ -588,11 +601,73 @@ export async function getGameScores() {
     .select("*")
     .order("updatedAt", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map((g) => ({
-    ...g,
-    createdAt: toDate(g.createdAt),
-    updatedAt: toDate(g.updatedAt),
-  }));
+  const scores = data ?? [];
+  const record =
+    scores.find((g) => g.gameName === WHACK_A_MOLE_GAME_NAME) ?? null;
+
+  if (record) {
+    return [
+      {
+        ...record,
+        createdAt: toDate(record.createdAt),
+        updatedAt: toDate(record.updatedAt),
+      },
+    ];
+  }
+
+  if (scores.length === 0) return [];
+
+  const latest = scores[0];
+  return [
+    {
+      ...latest,
+      gameName: WHACK_A_MOLE_GAME_NAME,
+      playerA: Math.max(...scores.map((g) => g.playerA ?? 0)),
+      playerB: Math.max(...scores.map((g) => g.playerB ?? 0)),
+      createdAt: toDate(latest.createdAt),
+      updatedAt: toDate(latest.updatedAt),
+    },
+  ];
+}
+
+export async function saveWhackAMoleBestScore(
+  player: "playerA" | "playerB",
+  score: number
+) {
+  const cleanScore = Math.max(0, Math.floor(score));
+  const sb = createServerClient();
+  const { data, error } = await sb
+    .from("GameScore")
+    .select("*")
+    .order("updatedAt", { ascending: false });
+  if (error) throw error;
+
+  const scores = data ?? [];
+  const existing = scores.find((g) => g.gameName === WHACK_A_MOLE_GAME_NAME);
+  if (!existing) {
+    const legacyBestA = Math.max(0, ...scores.map((g) => g.playerA ?? 0));
+    const legacyBestB = Math.max(0, ...scores.map((g) => g.playerB ?? 0));
+    const { error: insertError } = await sb.from("GameScore").insert({
+      gameName: WHACK_A_MOLE_GAME_NAME,
+      playerA:
+        player === "playerA" ? Math.max(legacyBestA, cleanScore) : legacyBestA,
+      playerB:
+        player === "playerB" ? Math.max(legacyBestB, cleanScore) : legacyBestB,
+      updatedAt: new Date().toISOString(),
+    });
+    if (insertError) throw insertError;
+    revalidatePath("/games");
+    return;
+  }
+
+  if (cleanScore <= (existing[player] ?? 0)) return;
+
+  const { error: updateError } = await sb
+    .from("GameScore")
+    .update({ [player]: cleanScore, updatedAt: new Date().toISOString() })
+    .eq("id", existing.id);
+  if (updateError) throw updateError;
+  revalidatePath("/games");
 }
 
 export async function createGame(gameName: string) {

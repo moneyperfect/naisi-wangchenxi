@@ -116,11 +116,8 @@ export function LoveLockVideoTransition({
 
       <motion.div
         className="w-full"
-        initial={{ opacity: 0, filter: "blur(10px)" }}
-        animate={{
-          opacity: stage === "unlocked" ? 1 : 0,
-          filter: stage === "unlocked" ? "blur(0px)" : "blur(10px)",
-        }}
+        initial={false}
+        animate={{ opacity: 1, filter: "blur(0px)" }}
         transition={{ duration: 0.8, delay: 0.1 }}
       >
         {children}
