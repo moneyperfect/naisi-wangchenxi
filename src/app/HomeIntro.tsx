@@ -3,16 +3,33 @@
 import { useState, useEffect } from "react";
 import { LoveLockVideoTransition } from "@/components/animations/LoveLockVideoTransition";
 
+function consumeCookie(name: string) {
+  const hasCookie = document.cookie
+    .split(";")
+    .some((item) => item.trim().startsWith(`${name}=`));
+
+  if (hasCookie) {
+    document.cookie = `${name}=; Max-Age=0; path=/`;
+  }
+
+  return hasCookie;
+}
+
 export function HomeIntro({ children }: { children: React.ReactNode }) {
   const [skip, setSkip] = useState(false);
   const [autoPlayIntro, setAutoPlayIntro] = useState(false);
 
   useEffect(() => {
-    const shouldAutoPlay = sessionStorage.getItem("intro-autoplay") === "1";
+    const shouldAutoPlay =
+      sessionStorage.getItem("intro-autoplay") === "1" ||
+      consumeCookie("intro_autoplay");
+
     if (shouldAutoPlay) {
       sessionStorage.removeItem("intro-autoplay");
       sessionStorage.removeItem("skip-next-app-loading");
       sessionStorage.removeItem("skip-next-route-loading");
+      consumeCookie("skip_next_app_loading");
+      consumeCookie("skip_next_route_loading");
       setAutoPlayIntro(true);
       setSkip(false);
       return;
