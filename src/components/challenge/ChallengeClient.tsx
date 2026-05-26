@@ -1,76 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Target, Check, Trophy, History } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE, CHALLENGES } from "@/lib/constants";
-import { createChallenge, completeChallenge } from "@/lib/actions";
-import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Challenge } from "@/types";
 
-interface ChallengeClientProps {
-  todayChallenge: Challenge | null;
-  history: Challenge[];
+const STORAGE_KEY = "couple-challenges";
+
+function getToday() {
+  return new Date().toISOString().split("T")[0];
 }
 
-export function ChallengeClient({ todayChallenge, history }: ChallengeClientProps) {
-  const [challenge, setChallenge] = useState(todayChallenge);
-  const [creating, setCreating] = useState(false);
-  const [completing, setCompleting] = useState<"A" | "B" | null>(null);
+function getDayIndex() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  return Math.floor((now.getTime() - start.getTime()) / 86400000);
+}
+
+function loadChallenges(): Challenge[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveChallenges(challenges: Challenge[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(challenges));
+}
+
+export function ChallengeClient() {
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [showHistory, setShowHistory] = useState(false);
 
-  async function handleCreate() {
-    setCreating(true);
-    try {
-      const dayOfYear = Math.floor(
-        (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
-      );
-      const idx = dayOfYear % CHALLENGES.length;
-      await createChallenge(CHALLENGES[idx]);
-      setChallenge({
-        id: 0,
-        challenge: CHALLENGES[idx],
-        date: new Date().toISOString().split("T")[0],
-        completedByA: false,
-        completedByB: false,
-        createdAt: new Date(),
-      });
-      toast.success("挑战已生成！");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "生成失败，请重试");
-    } finally {
-      setCreating(false);
-    }
+  useEffect(() => {
+    setChallenges(loadChallenges());
+  }, []);
+
+  const today = getToday();
+  const todayChallenge = challenges.find((c) => c.date === today) ?? null;
+  const history = challenges.filter((c) => c.date !== today).sort((a, b) => b.date.localeCompare(a.date));
+
+  function handleCreate() {
+    const idx = getDayIndex() % CHALLENGES.length;
+    const newChallenge: Challenge = {
+      id: Date.now(),
+      challenge: CHALLENGES[idx],
+      date: today,
+      completedByA: false,
+      completedByB: false,
+      createdAt: new Date(),
+    };
+    const updated = [...challenges, newChallenge];
+    saveChallenges(updated);
+    setChallenges(updated);
+    toast.success("挑战已生成！");
   }
 
-  async function handleComplete(author: "A" | "B") {
-    setCompleting(author);
-    try {
-      await completeChallenge(author);
-      setChallenge((prev) =>
-        prev
-          ? {
-              ...prev,
-              [author === "A" ? "completedByA" : "completedByB"]: true,
-            }
-          : null
-      );
-      toast.success(
-        author === "A" ? `${COUPLE.partnerA} 完成了！` : `${COUPLE.partnerB} 完成了！`
-      );
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "操作失败，请重试");
-    } finally {
-      setCompleting(null);
-    }
+  function handleComplete(author: "A" | "B") {
+    if (!todayChallenge) return;
+    const field = author === "A" ? "completedByA" : "completedByB";
+    const updated = challenges.map((c) =>
+      c.date === today ? { ...c, [field]: true } : c
+    );
+    saveChallenges(updated);
+    setChallenges(updated);
+    toast.success(
+      author === "A" ? `${COUPLE.partnerA} 完成了！` : `${COUPLE.partnerB} 完成了！`
+    );
   }
 
-  const bothDone = challenge?.completedByA && challenge?.completedByB;
+  const bothDone = todayChallenge?.completedByA && todayChallenge?.completedByB;
 
   return (
     <div className="space-y-6">
-      {/* Today's Challenge */}
       <div className="text-center space-y-4">
         <div className="inline-flex p-4 rounded-full bg-violet-100 text-violet-500">
           <Target size={40} />
@@ -79,32 +86,33 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
         <p className="text-sm text-stone-400">每天一个趣味挑战，敢不敢接？</p>
       </div>
 
-      {!challenge ? (
+      {!todayChallenge ? (
         <div className="text-center space-y-4">
           <p className="text-sm text-stone-400">今天还没有挑战</p>
           <button
             onClick={handleCreate}
-            disabled={creating}
-            className="px-6 py-3 rounded-2xl bg-violet-500 text-white font-medium hover:bg-violet-600 active:scale-95 transition-all disabled:opacity-50"
+            className="px-6 py-3 rounded-2xl bg-violet-500 text-white font-medium hover:bg-violet-600 active:scale-95 transition-all"
           >
-            {creating ? "生成中..." : "生成今日挑战"}
+            生成今日挑战
           </button>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className={cn(
-            "p-6 rounded-3xl border-2 text-center",
-            bothDone
-              ? "bg-emerald-50 border-emerald-200"
-              : "bg-violet-50 border-violet-200"
-          )}>
+          <div
+            className={cn(
+              "p-6 rounded-3xl border-2 text-center",
+              bothDone
+                ? "bg-emerald-50 border-emerald-200"
+                : "bg-violet-50 border-violet-200"
+            )}
+          >
             {bothDone && (
               <div className="inline-flex p-2 rounded-full bg-emerald-100 text-emerald-500 mb-3">
                 <Trophy size={24} />
               </div>
             )}
             <p className="font-serif text-lg font-semibold text-stone-800">
-              {challenge.challenge}
+              {todayChallenge.challenge}
             </p>
             {bothDone && (
               <p className="text-sm text-emerald-600 mt-2">双方都完成了！默契满分！</p>
@@ -114,15 +122,15 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => handleComplete("A")}
-              disabled={challenge.completedByA || completing !== null}
+              disabled={todayChallenge.completedByA}
               className={cn(
                 "py-3 rounded-2xl font-medium transition-all",
-                challenge.completedByA
+                todayChallenge.completedByA
                   ? "bg-emerald-100 text-emerald-600"
                   : "bg-warm-500 text-white hover:bg-warm-600 active:scale-95"
               )}
             >
-              {challenge.completedByA ? (
+              {todayChallenge.completedByA ? (
                 <span className="inline-flex items-center gap-1">
                   <Check size={16} /> {COUPLE.partnerA} 已完成
                 </span>
@@ -132,15 +140,15 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
             </button>
             <button
               onClick={() => handleComplete("B")}
-              disabled={challenge.completedByB || completing !== null}
+              disabled={todayChallenge.completedByB}
               className={cn(
                 "py-3 rounded-2xl font-medium transition-all",
-                challenge.completedByB
+                todayChallenge.completedByB
                   ? "bg-emerald-100 text-emerald-600"
                   : "bg-rose-500 text-white hover:bg-rose-600 active:scale-95"
               )}
             >
-              {challenge.completedByB ? (
+              {todayChallenge.completedByB ? (
                 <span className="inline-flex items-center gap-1">
                   <Check size={16} /> {COUPLE.partnerB} 已完成
                 </span>
@@ -152,7 +160,6 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
         </div>
       )}
 
-      {/* History */}
       <div>
         <button
           onClick={() => setShowHistory(!showHistory)}
@@ -167,18 +174,19 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
             {history.length === 0 ? (
               <p className="text-center text-sm text-stone-400 py-4">还没有历史挑战</p>
             ) : (
-              history.map((item, i) => (
-                <ScrollReveal key={item.id} delay={i * 0.05}>
-                  <div className="p-4 rounded-2xl bg-white/60 border border-warm-200/30">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-stone-400">{formatDate(item.date)}</span>
-                      {item.completedByA && item.completedByB && (
-                        <span className="text-xs text-emerald-500">双方完成</span>
-                      )}
-                    </div>
-                    <p className="text-sm text-stone-700">{item.challenge}</p>
+              history.map((item) => (
+                <div
+                  key={item.id}
+                  className="p-4 rounded-2xl bg-white/60 border border-warm-200/30"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-stone-400">{formatDate(item.date)}</span>
+                    {item.completedByA && item.completedByB && (
+                      <span className="text-xs text-emerald-500">双方完成</span>
+                    )}
                   </div>
-                </ScrollReveal>
+                  <p className="text-sm text-stone-700">{item.challenge}</p>
+                </div>
               ))
             )}
           </div>
