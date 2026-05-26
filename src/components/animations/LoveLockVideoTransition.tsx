@@ -80,11 +80,11 @@ export function LoveLockVideoTransition({
   }, [autoPlay, motionPreferenceKnown, stage]);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-cream via-warm-50 to-warm-100">
+    <div className="relative min-h-screen w-full overflow-hidden bg-cream">
       <AnimatePresence>
         {stage !== "unlocked" && (
           <motion.div
-            className="absolute inset-0 z-[60] flex cursor-pointer items-center justify-center bg-gradient-to-br from-cream via-warm-50 to-warm-100 px-6"
+            className="absolute inset-0 z-[60] flex cursor-pointer items-center justify-center bg-cream px-6"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.03 }}
             transition={{ duration: 0.6, ease: "easeInOut" }}

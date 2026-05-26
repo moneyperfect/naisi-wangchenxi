@@ -60,7 +60,7 @@ export function LoveLoading({
       aria-live="polite"
       aria-label={message}
       className={[
-        "flex items-center justify-center bg-gradient-to-br from-cream via-warm-50 to-warm-100",
+        "flex items-center justify-center bg-cream",
         fullScreen ? "fixed inset-0 z-[60] min-h-screen" : "min-h-[60vh] w-full",
         className,
       ].join(" ")}
