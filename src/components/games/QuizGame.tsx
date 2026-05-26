@@ -127,7 +127,7 @@ export function QuizGame({ questions }: QuizGameProps) {
           </p>
           <p className="text-sm text-stone-400 mt-1">
             正确率 {pct}%{" "}
-            {pct === 100 ? "满分！太默契了！" : pct >= 70 ? "很棒！" : "继续加油~"}
+            {pct === 100 ? "满分！灵魂伴侣实锤！" : pct >= 70 ? "不错，有两把刷子" : "还需要多了解对方哦"}
           </p>
         </div>
         <div className="flex gap-3">

@@ -107,7 +107,7 @@ export function RantForm({ onClose }: { onClose: () => void }) {
       <textarea
         name="content"
         rows={4}
-        placeholder={level === "rage" ? "今天必须好好说道说道！！！" : "今天有什么想吐槽的..."}
+        placeholder={level === "rage" ? "今天不吐不快！！！" : "有什么想吐槽的..."}
         className={cn(
           "w-full px-4 py-3 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-warm-300 focus:border-transparent",
           level === "rage"

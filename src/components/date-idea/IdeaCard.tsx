@@ -59,7 +59,7 @@ export function IdeaCard({ idea }: IdeaCardProps) {
   return (
     <div
       className={cn(
-        "bg-white/60 backdrop-blur-sm rounded-2xl p-4 border group hover:shadow-md transition-all duration-300",
+        "bg-white/60 rounded-2xl p-4 border group hover:shadow-md transition-all duration-300",
         idea.locked
           ? "border-warm-400/60 shadow-[0_0_15px_rgba(217,119,87,0.15)]"
           : "border-warm-200/30 hover:border-warm-300/50"

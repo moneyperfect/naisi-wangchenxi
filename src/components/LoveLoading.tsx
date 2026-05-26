@@ -12,7 +12,7 @@ type LoveLoadingProps = {
 };
 
 function useAllowsMotion() {
-  const [allowsMotion, setAllowsMotion] = useState<boolean | null>(null);
+  const [allowsMotion, setAllowsMotion] = useState(true);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -31,7 +31,7 @@ function useAllowsMotion() {
     return () => mediaQuery.removeEventListener("change", syncPreference);
   }, []);
 
-  return allowsMotion === true;
+  return allowsMotion;
 }
 
 export function LoveLoading({

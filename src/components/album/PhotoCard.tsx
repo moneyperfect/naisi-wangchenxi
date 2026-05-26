@@ -140,7 +140,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-warm-100/95 via-warm-50/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div className="absolute bottom-0 left-0 right-0 p-3">
             {caption && (
-              <p className="line-clamp-2 rounded-xl bg-cream/90 px-3 py-2 text-sm leading-5 text-stone-700 shadow-sm backdrop-blur-sm">
+              <p className="line-clamp-2 rounded-xl bg-cream/90 px-3 py-2 text-sm leading-5 text-stone-700 shadow-sm ">
                 {caption}
               </p>
             )}
@@ -151,7 +151,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
             event.stopPropagation();
             openCaptionEditor();
           }}
-          className="absolute left-2 top-2 rounded-full bg-cream/85 p-1.5 text-stone-600 opacity-100 shadow-sm backdrop-blur-sm transition hover:bg-warm-100 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute left-2 top-2 rounded-full bg-cream/85 p-1.5 text-stone-600 opacity-100 shadow-sm  transition hover:bg-warm-100 sm:opacity-0 sm:group-hover:opacity-100"
           title="编辑备注"
         >
           <Pencil size={14} />
@@ -161,7 +161,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
             event.stopPropagation();
             handleDelete();
           }}
-          className="absolute right-2 top-2 rounded-full bg-stone-900/30 p-1.5 text-white opacity-100 backdrop-blur-sm transition hover:bg-red-500/80 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute right-2 top-2 rounded-full bg-stone-900/30 p-1.5 text-white opacity-100  transition hover:bg-red-500/80 sm:opacity-0 sm:group-hover:opacity-100"
         >
           <Trash2 size={14} />
         </button>

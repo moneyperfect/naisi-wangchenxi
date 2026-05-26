@@ -141,7 +141,7 @@ function MilestoneCard({
             isLeft ? "ml-auto pl-4" : "mr-auto pr-4 text-right"
           }`}
         >
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-warm-200/30 group-hover:border-warm-300/50 group-hover:shadow-md transition-all duration-300">
+          <div className="bg-white/60 rounded-2xl p-4 border border-warm-200/30 group-hover:border-warm-300/50 group-hover:shadow-md transition-all duration-300">
             <div className="flex items-start justify-between gap-2">
               <div className={isLeft ? "" : "ml-auto"}>
                 <span className="text-xs text-warm-500 font-medium">

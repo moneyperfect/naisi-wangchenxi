@@ -39,7 +39,7 @@ export function MusicPlayer() {
   return (
     <button
       onClick={toggle}
-      className="fixed bottom-20 right-4 z-40 w-11 h-11 rounded-full bg-white/80 backdrop-blur-sm border border-warm-200/50 shadow-md flex items-center justify-center text-warm-600 hover:bg-warm-100 hover:scale-105 transition-all duration-200"
+      className="fixed bottom-20 right-4 z-40 w-11 h-11 rounded-full bg-white/80 border border-warm-200/50 shadow-md flex items-center justify-center text-warm-600 hover:bg-warm-100 hover:scale-105 transition-all duration-200"
       title={isPlaying ? "暂停音乐" : "播放音乐"}
     >
       {isPlaying ? <Pause size={18} /> : <Music size={18} />}

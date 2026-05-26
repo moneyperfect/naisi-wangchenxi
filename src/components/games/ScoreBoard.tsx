@@ -13,7 +13,7 @@ export function ScoreBoard({ scores }: ScoreBoardProps) {
 
   if (!record) {
     return (
-      <div className="rounded-3xl border border-warm-200/40 bg-white/60 px-5 py-8 text-center backdrop-blur-sm">
+      <div className="rounded-3xl border border-warm-200/40 bg-white/60 px-5 py-8 text-center ">
         <Trophy className="mx-auto mb-3 text-warm-300" size={34} />
         <p className="font-serif text-base font-semibold text-stone-700">
           还没有打地鼠记录
@@ -26,7 +26,7 @@ export function ScoreBoard({ scores }: ScoreBoardProps) {
   }
 
   return (
-    <div className="rounded-3xl border border-warm-200/40 bg-white/65 p-5 shadow-sm shadow-warm-100/40 backdrop-blur-sm">
+    <div className="rounded-3xl border border-warm-200/40 bg-white/65 p-5 shadow-sm shadow-warm-100/40 ">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-medium tracking-[0.18em] text-warm-400">

@@ -723,19 +723,25 @@ export async function getTodaysChallenge() {
     .from("Challenge")
     .select("*")
     .eq("date", today)
-    .single();
-  if (error && error.code !== "PGRST116") throw error;
+    .maybeSingle();
+  if (error) {
+    console.error("[getTodaysChallenge]", JSON.stringify(error));
+    throw new Error(`查询挑战失败: ${error.message} (code: ${error.code})`);
+  }
   return data ? { ...data, createdAt: toDate(data.createdAt) } : null;
 }
 
 export async function createChallenge(challenge: string) {
   const sb = createServerClient();
   const today = new Date().toISOString().split("T")[0];
-  const { error } = await sb.from("Challenge").insert({
+  const { data, error } = await sb.from("Challenge").insert({
     challenge,
     date: today,
-  });
-  if (error) throw error;
+  }).select();
+  if (error) {
+    console.error("[createChallenge]", JSON.stringify(error));
+    throw new Error(`创建挑战失败: ${error.message} (code: ${error.code}, details: ${error.details})`);
+  }
   revalidatePath("/challenge");
 }
 
@@ -747,7 +753,10 @@ export async function completeChallenge(author: "A" | "B") {
     .from("Challenge")
     .update({ [field]: true })
     .eq("date", today);
-  if (error) throw error;
+  if (error) {
+    console.error("[completeChallenge]", JSON.stringify(error));
+    throw new Error(`完成挑战失败: ${error.message} (code: ${error.code})`);
+  }
   revalidatePath("/challenge");
 }
 
@@ -758,7 +767,10 @@ export async function getChallengeHistory() {
     .select("*")
     .order("date", { ascending: false })
     .limit(30);
-  if (error) throw error;
+  if (error) {
+    console.error("[getChallengeHistory]", JSON.stringify(error));
+    throw new Error(`查询历史失败: ${error.message} (code: ${error.code})`);
+  }
   return (data ?? []).map((r) => ({
     ...r,
     createdAt: toDate(r.createdAt),
@@ -772,7 +784,10 @@ export async function getDebates() {
     .from("Debate")
     .select("*")
     .order("createdAt", { ascending: false });
-  if (error) throw error;
+  if (error) {
+    console.error("[getDebates]", JSON.stringify(error));
+    throw new Error(`查询辩论失败: ${error.message} (code: ${error.code})`);
+  }
   return (data ?? []).map((r) => ({
     ...r,
     createdAt: toDate(r.createdAt),
@@ -781,12 +796,15 @@ export async function getDebates() {
 
 export async function createDebate(topic: string, optionA: string, optionB: string) {
   const sb = createServerClient();
-  const { error } = await sb.from("Debate").insert({
+  const { data, error } = await sb.from("Debate").insert({
     topic,
     optionA,
     optionB,
-  });
-  if (error) throw error;
+  }).select();
+  if (error) {
+    console.error("[createDebate]", JSON.stringify(error));
+    throw new Error(`创建辩论失败: ${error.message} (code: ${error.code}, details: ${error.details})`);
+  }
   revalidatePath("/debate");
 }
 
@@ -797,7 +815,10 @@ export async function getDebateArguments(debateId: number) {
     .select("*")
     .eq("debateId", debateId)
     .order("createdAt", { ascending: true });
-  if (error) throw error;
+  if (error) {
+    console.error("[getDebateArguments]", JSON.stringify(error));
+    throw new Error(`查询论点失败: ${error.message} (code: ${error.code})`);
+  }
   return (data ?? []).map((r) => ({
     ...r,
     createdAt: toDate(r.createdAt),
@@ -817,14 +838,20 @@ export async function submitDebateArgument(
     side,
     argument,
   });
-  if (error) throw error;
+  if (error) {
+    console.error("[submitDebateArgument]", JSON.stringify(error));
+    throw new Error(`提交论点失败: ${error.message} (code: ${error.code})`);
+  }
   revalidatePath("/debate");
 }
 
 export async function deleteDebate(id: number) {
   const sb = createServerClient();
   const { error } = await sb.from("Debate").delete().eq("id", id);
-  if (error) throw error;
+  if (error) {
+    console.error("[deleteDebate]", JSON.stringify(error));
+    throw new Error(`删除辩论失败: ${error.message} (code: ${error.code})`);
+  }
   revalidatePath("/debate");
 }
 
@@ -832,7 +859,10 @@ export async function deleteDebate(id: number) {
 export async function getAchievements() {
   const sb = createServerClient();
   const { data, error } = await sb.from("Achievement").select("*");
-  if (error) throw error;
+  if (error) {
+    console.error("[getAchievements]", JSON.stringify(error));
+    throw new Error(`查询成就失败: ${error.message} (code: ${error.code})`);
+  }
   return (data ?? []).map((r) => ({
     ...r,
     unlockedAtA: r.unlockedAtA ? toDate(r.unlockedAtA) : null,
@@ -850,5 +880,8 @@ export async function unlockAchievement(key: string, author: "A" | "B") {
       { key, [field]: true, [timeField]: new Date().toISOString() },
       { onConflict: "key" }
     );
-  if (error) throw error;
+  if (error) {
+    console.error("[unlockAchievement]", JSON.stringify(error));
+    throw new Error(`解锁成就失败: ${error.message} (code: ${error.code})`);
+  }
 }

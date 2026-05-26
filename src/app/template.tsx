@@ -38,7 +38,7 @@ export default function Template({ children }: { children: ReactNode }) {
       <div className="relative">{children}</div>
 
       {showRouteLoading && (
-        <div className="fixed inset-0 z-[60] pointer-events-none">
+        <div className="fixed inset-0 z-[60] pointer-events-none" style={{ backgroundColor: "#fffbf7" }}>
           <LoveLoading fullScreen />
         </div>
       )}

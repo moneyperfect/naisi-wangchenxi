@@ -57,7 +57,7 @@ export function NoteCard({ note }: NoteCardProps) {
     <>
       <div
         className={cn(
-          "bg-white/60 backdrop-blur-sm rounded-2xl border border-warm-200/30 overflow-hidden transition-all duration-300 group hover:shadow-md",
+          "bg-white/60 rounded-2xl border border-warm-200/30 overflow-hidden transition-all duration-300 group hover:shadow-md",
           !note.isRead && !isScheduled && "border-warm-300/50",
           isScheduled && "border-dashed border-warm-300/40"
         )}

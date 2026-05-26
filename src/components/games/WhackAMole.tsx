@@ -180,7 +180,7 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
           <h2 className="font-serif text-xl font-bold text-stone-800 mb-1">
             打地鼠
           </h2>
-          <p className="text-sm text-stone-400">30 秒内尽可能多地点中目标</p>
+          <p className="text-sm text-stone-400">30 秒内疯狂点击，决一胜负</p>
         </div>
 
         <div>

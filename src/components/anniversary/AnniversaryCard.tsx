@@ -32,7 +32,7 @@ export function AnniversaryCard({ item }: AnniversaryCardProps) {
 
   return (
     <>
-      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-warm-200/30 group hover:shadow-md hover:border-warm-300/50 transition-all duration-300">
+      <div className="bg-white/60 rounded-2xl p-5 border border-warm-200/30 group hover:shadow-md hover:border-warm-300/50 transition-all duration-300">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h3 className="font-serif font-semibold text-stone-800">

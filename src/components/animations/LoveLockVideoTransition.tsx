@@ -15,7 +15,7 @@ type PageTransitionProps = {
 type Stage = "locked" | "unlocking" | "unlocked";
 
 function useAllowsMotion() {
-  const [allowsMotion, setAllowsMotion] = useState<boolean | null>(null);
+  const [allowsMotion, setAllowsMotion] = useState(true);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -45,7 +45,7 @@ export function LoveLockVideoTransition({
   const [stage, setStage] = useState<Stage>("locked");
   const videoRef = useRef<HTMLVideoElement>(null);
   const allowsMotion = useAllowsMotion();
-  const motionPreferenceKnown = allowsMotion !== null;
+  const motionPreferenceKnown = true;
 
   function completeIntro() {
     setStage("unlocked");

@@ -44,7 +44,7 @@ export function RantCard({ rant }: { rant: Rant }) {
   }
 
   return (
-    <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-warm-200/30 p-4 group hover:shadow-md transition-all duration-300">
+    <div className="bg-white/60 rounded-2xl border border-warm-200/30 p-4 group hover:shadow-md transition-all duration-300">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div

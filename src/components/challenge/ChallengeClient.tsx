@@ -37,8 +37,8 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
         createdAt: new Date(),
       });
       toast.success("挑战已生成！");
-    } catch {
-      toast.error("生成失败，请重试");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "生成失败，请重试");
     } finally {
       setCreating(false);
     }
@@ -59,8 +59,8 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
       toast.success(
         author === "A" ? `${COUPLE.partnerA} 完成了！` : `${COUPLE.partnerB} 完成了！`
       );
-    } catch {
-      toast.error("操作失败，请重试");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "操作失败，请重试");
     } finally {
       setCompleting(null);
     }
@@ -76,6 +76,7 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
           <Target size={40} />
         </div>
         <h2 className="font-serif text-xl font-bold text-stone-800">今日挑战</h2>
+        <p className="text-sm text-stone-400">每天一个趣味挑战，敢不敢接？</p>
       </div>
 
       {!challenge ? (
@@ -106,7 +107,7 @@ export function ChallengeClient({ todayChallenge, history }: ChallengeClientProp
               {challenge.challenge}
             </p>
             {bothDone && (
-              <p className="text-sm text-emerald-600 mt-2">双方都完成了！太棒了！</p>
+              <p className="text-sm text-emerald-600 mt-2">双方都完成了！默契满分！</p>
             )}
           </div>
 

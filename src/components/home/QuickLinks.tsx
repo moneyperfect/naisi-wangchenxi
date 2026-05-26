@@ -5,6 +5,7 @@ import {
   Image,
   MessageCircleHeart,
   Sparkles,
+  MoreHorizontal,
 } from "lucide-react";
 
 const links = [
@@ -45,9 +46,9 @@ const links = [
   },
   {
     href: "/more",
-    icon: MessageCircleHeart,
+    icon: MoreHorizontal,
     title: "更多",
-    desc: "随机约会·今日一问",
+    desc: "辩论·挑战·游戏",
     color: "bg-emerald-50 text-emerald-500",
   },
 ];
@@ -60,7 +61,7 @@ export function QuickLinks() {
           <Link
             key={href}
             href={href}
-            className="group bg-white/60 backdrop-blur-sm rounded-3xl p-5 border border-warm-200/30 hover:border-warm-300/50 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="group bg-white/60 rounded-3xl p-5 border border-warm-200/30 hover:border-warm-300/50 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             <div className={`inline-flex p-2.5 rounded-xl ${color} mb-3`}>
               <Icon size={20} />

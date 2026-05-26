@@ -18,7 +18,7 @@ async function RantContent() {
       <EmptyState
         icon={<MessageSquare size={32} />}
         title="还没有吐槽"
-        description="有什么不满，尽管说出来"
+        description="有什么不满？尽管开炮"
         action={<RantAddButton />}
       />
     );

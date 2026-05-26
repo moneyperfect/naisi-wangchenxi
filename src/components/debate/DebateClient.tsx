@@ -29,8 +29,8 @@ export function DebateClient({ debates: initialDebates }: DebateClientProps) {
       await createDebate(topic.topic, topic.optionA, topic.optionB);
       toast.success("辩题已创建！");
       window.location.reload();
-    } catch {
-      toast.error("创建失败，请重试");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "创建失败，请重试");
     }
   }
 
@@ -45,8 +45,8 @@ export function DebateClient({ debates: initialDebates }: DebateClientProps) {
       toast.success("辩题已创建！");
       setShowForm(false);
       window.location.reload();
-    } catch {
-      toast.error("创建失败，请重试");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "创建失败，请重试");
     }
   }
 
@@ -63,8 +63,8 @@ export function DebateClient({ debates: initialDebates }: DebateClientProps) {
       setSelectedSide(null);
       setActiveDebate(null);
       window.location.reload();
-    } catch {
-      toast.error("提交失败，请重试");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "提交失败，请重试");
     } finally {
       setSubmitting(false);
     }
@@ -76,8 +76,8 @@ export function DebateClient({ debates: initialDebates }: DebateClientProps) {
       await deleteDebate(id);
       setDebates((prev) => prev.filter((d) => d.id !== id));
       toast.success("已删除");
-    } catch {
-      toast.error("删除失败");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "删除失败");
     }
   }
 
@@ -89,7 +89,7 @@ export function DebateClient({ debates: initialDebates }: DebateClientProps) {
           <Swords size={40} />
         </div>
         <h2 className="font-serif text-xl font-bold text-stone-800">辩论场</h2>
-        <p className="text-sm text-stone-400">选边站，写论点，看看谁更有理</p>
+        <p className="text-sm text-stone-400">选边站，写论点，用逻辑征服对方</p>
       </div>
 
       {/* Action Buttons */}
@@ -145,7 +145,7 @@ export function DebateClient({ debates: initialDebates }: DebateClientProps) {
         <EmptyState
           icon={<Swords size={32} />}
           title="还没有辩题"
-          description="创建一个辩题，看看谁更有理"
+          description="来一场酣畅淋漓的思维碰撞吧"
         />
       ) : (
         <div className="space-y-4">
