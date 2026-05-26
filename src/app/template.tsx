@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { LoveLoading } from "@/components/LoveLoading";
 
 const MIN_ROUTE_LOADING_MS = 800;
@@ -38,21 +37,11 @@ export default function Template({ children }: { children: ReactNode }) {
     <>
       <div className="relative">{children}</div>
 
-      <AnimatePresence>
-        {showRouteLoading && (
-          <motion.div
-            key="minimum-route-loading"
-            className="fixed inset-0 z-[60] pointer-events-none"
-            style={{ backgroundColor: "#fffbf7" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-          >
-            <LoveLoading fullScreen />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showRouteLoading && (
+        <div className="fixed inset-0 z-[60] pointer-events-none">
+          <LoveLoading fullScreen />
+        </div>
+      )}
     </>
   );
 }
