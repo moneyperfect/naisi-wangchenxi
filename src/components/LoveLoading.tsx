@@ -60,10 +60,11 @@ export function LoveLoading({
       aria-live="polite"
       aria-label={message}
       className={[
-        "flex items-center justify-center bg-cream",
+        "flex items-center justify-center",
         fullScreen ? "fixed inset-0 z-[60] min-h-screen" : "min-h-[60vh] w-full",
         className,
       ].join(" ")}
+      style={{ backgroundColor: "#fffbf7" }}
     >
       <div className="flex flex-col items-center gap-4 px-6 text-center">
         {!videoFailed && allowsMotion ? (

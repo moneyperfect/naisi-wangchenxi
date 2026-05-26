@@ -50,7 +50,7 @@ export function InitialLoadingOverlay() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[80]">
+    <div className="fixed inset-0 z-[80]" style={{ backgroundColor: "#fffbf7" }}>
       <LoveLoading fullScreen />
     </div>
   );

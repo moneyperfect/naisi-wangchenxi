@@ -43,6 +43,7 @@ export default function Template({ children }: { children: ReactNode }) {
           <motion.div
             key="minimum-route-loading"
             className="fixed inset-0 z-[60] pointer-events-none"
+            style={{ backgroundColor: "#fffbf7" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
