@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
 
 const LOADING_VIDEO_SRC = "/animations/loading.mp4";
 
@@ -15,8 +16,15 @@ function useAllowsMotion() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncPreference = () => setAllowsMotion(!mediaQuery.matches);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
+    if (isIOS) {
+      setAllowsMotion(false);
+      return;
+    }
+
+    const syncPreference = () => setAllowsMotion(!mediaQuery.matches);
     syncPreference();
     mediaQuery.addEventListener("change", syncPreference);
 
@@ -53,24 +61,31 @@ export function LoveLoading({
       aria-label={message}
       className={[
         "flex items-center justify-center bg-gradient-to-br from-cream via-warm-50 to-warm-100",
-        fullScreen ? "fixed inset-0 z-[60] min-h-dvh" : "min-h-[60dvh] w-full",
+        fullScreen ? "fixed inset-0 z-[60] min-h-screen" : "min-h-[60vh] w-full",
         className,
       ].join(" ")}
     >
       <div className="flex flex-col items-center gap-4 px-6 text-center">
-        {!videoFailed && (
+        {!videoFailed && allowsMotion ? (
           <video
-            key={allowsMotion ? "motion" : "still"}
             src={LOADING_VIDEO_SRC}
-            className="size-24 object-contain mix-blend-multiply sm:size-[120px]"
-            autoPlay={allowsMotion}
-            loop={allowsMotion}
+            className="size-24 object-contain sm:size-[120px]"
+            autoPlay
+            loop
             muted
             playsInline
-            preload={allowsMotion ? "auto" : "metadata"}
+            preload="auto"
             aria-hidden="true"
             onError={() => setVideoFailed(true)}
           />
+        ) : (
+          <div className="size-24 sm:size-[120px] flex items-center justify-center">
+            <Heart
+              size={48}
+              className="text-warm-400 animate-pulse"
+              fill="currentColor"
+            />
+          </div>
         )}
 
         <p className="font-serif text-base font-semibold text-stone-700 sm:text-lg">

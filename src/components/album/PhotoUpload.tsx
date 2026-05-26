@@ -177,8 +177,8 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
           <p className="text-xs text-stone-400 mt-1">支持 JPG、PNG、WebP、GIF</p>
         </div>
       ) : (
-        <div className="flex max-h-[calc(100dvh-9rem)] min-h-0 flex-col gap-3">
-          <div className="min-h-0 max-h-[calc(100dvh-17rem)] space-y-2 overflow-y-auto pr-1">
+        <div className="flex max-h-[calc(100vh-9rem)] min-h-0 flex-col gap-3">
+          <div className="min-h-0 max-h-[calc(100vh-17rem)] space-y-2 overflow-y-auto pr-1">
             {items.map((item) => (
               <div
                 key={item.id}

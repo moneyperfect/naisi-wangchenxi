@@ -22,11 +22,16 @@ export function PhotoCard({ photo }: PhotoCardProps) {
   useEffect(() => {
     if (!lightbox) return;
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY);
     };
   }, [lightbox]);
 
@@ -68,7 +73,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
             role="dialog"
             aria-modal="true"
             aria-label={caption || "照片预览"}
-            className="fixed inset-0 z-[70] flex flex-col overflow-hidden bg-gradient-to-br from-cream/95 via-warm-50/95 to-warm-100/95 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] flex flex-col overflow-hidden bg-gradient-to-br from-cream/95 via-warm-50/95 to-warm-100/95"
             onClick={() => setLightbox(false)}
           >
             <button
@@ -92,7 +97,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
               <img
                 src={photo.url}
                 alt={caption || "照片"}
-                className="max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain shadow-xl shadow-stone-900/10"
+                className="max-h-[calc(100vh-8rem)] max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain shadow-xl shadow-stone-900/10"
                 draggable={false}
                 onClick={(event) => event.stopPropagation()}
               />
@@ -103,7 +108,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
               onClick={(event) => event.stopPropagation()}
             >
               {caption ? (
-                <p className="mx-auto max-h-[28dvh] max-w-md overflow-y-auto break-words rounded-2xl border border-warm-200/70 bg-cream/95 px-4 py-3 text-left text-sm leading-6 text-stone-700 shadow-lg shadow-stone-900/10 backdrop-blur-sm">
+                <p className="mx-auto max-h-[28vh] max-w-md overflow-y-auto break-words rounded-2xl border border-warm-200/70 bg-cream/95 px-4 py-3 text-left text-sm leading-6 text-stone-700 shadow-lg shadow-stone-900/10">
                   {caption}
                 </p>
               ) : (
@@ -175,7 +180,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
             onChange={(event) => setCaptionDraft(event.target.value)}
             placeholder="写下这张照片里的小故事..."
             rows={6}
-            className="max-h-[38dvh] min-h-32 w-full resize-y rounded-2xl border border-warm-200 bg-cream px-4 py-3 text-sm leading-6 text-stone-700 placeholder:text-stone-300 focus:border-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-200"
+            className="max-h-[38vh] min-h-32 w-full resize-y rounded-2xl border border-warm-200 bg-cream px-4 py-3 text-sm leading-6 text-stone-700 placeholder:text-stone-300 focus:border-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-200"
           />
           <div className="flex gap-3">
             <button

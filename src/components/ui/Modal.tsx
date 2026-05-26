@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
@@ -15,6 +15,7 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   const [mounted, setMounted] = useState(false);
+  const scrollYRef = useRef(0);
 
   useEffect(() => {
     setMounted(true);
@@ -23,11 +24,16 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    scrollYRef.current = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollYRef.current}px`;
+    document.body.style.width = "100%";
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollYRef.current);
     };
   }, [isOpen]);
 
@@ -36,9 +42,9 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[70] overflow-y-auto overflow-x-hidden p-4">
+        <div className="fixed inset-0 z-[70] overflow-y-auto overflow-x-hidden p-4" style={{ WebkitOverflowScrolling: "touch" }}>
           <motion.div
-            className="fixed inset-0 bg-stone-900/30 backdrop-blur-sm"
+            className="fixed inset-0 bg-stone-900/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -50,7 +56,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
               role="dialog"
               aria-modal="true"
               aria-label={title}
-              className="flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-warm-200/50 bg-warm-50 p-4 shadow-xl sm:p-6"
+              className="flex max-h-[calc(100vh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-warm-200/50 bg-warm-50 p-4 shadow-xl sm:p-6"
               initial={{ opacity: 0, scale: 0.94, y: 18 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 10 }}
@@ -70,7 +76,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                 </button>
               </div>
 
-              <div className="min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+              <div className="min-h-0 overflow-y-auto overflow-x-hidden pr-1" style={{ WebkitOverflowScrolling: "touch" }}>
                 {children}
               </div>
             </motion.div>

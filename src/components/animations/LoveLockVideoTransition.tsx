@@ -19,8 +19,15 @@ function useAllowsMotion() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncPreference = () => setAllowsMotion(!mediaQuery.matches);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
+    if (isIOS) {
+      setAllowsMotion(false);
+      return;
+    }
+
+    const syncPreference = () => setAllowsMotion(!mediaQuery.matches);
     syncPreference();
     mediaQuery.addEventListener("change", syncPreference);
 
@@ -87,7 +94,7 @@ export function LoveLockVideoTransition({
               <video
                 ref={videoRef}
                 src={INTRO_VIDEO_SRC}
-                className="w-56 object-contain mix-blend-multiply sm:w-72"
+                className="w-56 object-contain sm:w-72"
                 muted
                 playsInline
                 preload="auto"

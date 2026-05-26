@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoveLoading } from "@/components/LoveLoading";
 
-const MIN_ROUTE_LOADING_MS = 1200;
+const MIN_ROUTE_LOADING_MS = 800;
 
 let hasRenderedInitialRoute = false;
 
@@ -42,7 +42,7 @@ export default function Template({ children }: { children: ReactNode }) {
         {showRouteLoading && (
           <motion.div
             key="minimum-route-loading"
-            className="fixed inset-0 z-[60]"
+            className="fixed inset-0 z-[60] pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
