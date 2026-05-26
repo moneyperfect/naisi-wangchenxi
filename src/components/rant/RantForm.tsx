@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { addRant } from "@/lib/actions";
 import { Button } from "@/components/ui/Button";
-import { COUPLE } from "@/lib/constants";
+import { COUPLE, RANT_LEVELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const categories = [
@@ -19,6 +19,7 @@ export function RantForm({ onClose }: { onClose: () => void }) {
   const [loading, setLoading] = useState(false);
   const [author, setAuthor] = useState("A");
   const [category, setCategory] = useState("other");
+  const [level, setLevel] = useState("whisper");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,10 +27,13 @@ export function RantForm({ onClose }: { onClose: () => void }) {
     const content = formData.get("content") as string;
     if (!content.trim()) return;
 
+    const levelConfig = RANT_LEVELS.find((l) => l.key === level);
+    const prefix = level === "whisper" ? "" : level === "shout" ? "【大声嚷嚷】" : "【暴怒模式】";
+
     setLoading(true);
     try {
-      await addRant({ author, content: content.trim(), category });
-      toast.success("吐槽成功！");
+      await addRant({ author, content: prefix + content.trim(), category });
+      toast.success(level === "rage" ? "暴怒吐槽成功！" : "吐槽成功！");
       onClose();
     } catch {
       toast.error("发送失败");
@@ -59,6 +63,27 @@ export function RantForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div>
+        <p className="text-xs text-stone-400 mb-2">吐槽等级</p>
+        <div className="flex gap-2">
+          {RANT_LEVELS.map((l) => (
+            <button
+              key={l.key}
+              type="button"
+              onClick={() => setLevel(l.key)}
+              className={cn(
+                "flex-1 py-2 rounded-xl text-xs font-medium transition-colors",
+                level === l.key
+                  ? l.color + " ring-1 ring-current"
+                  : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+              )}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
         <p className="text-xs text-stone-400 mb-2">分类</p>
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
@@ -82,13 +107,28 @@ export function RantForm({ onClose }: { onClose: () => void }) {
       <textarea
         name="content"
         rows={4}
-        placeholder="今天有什么想吐槽的..."
-        className="w-full px-4 py-3 rounded-2xl bg-stone-50 border border-stone-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-warm-300 focus:border-transparent"
+        placeholder={level === "rage" ? "今天必须好好说道说道！！！" : "今天有什么想吐槽的..."}
+        className={cn(
+          "w-full px-4 py-3 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-warm-300 focus:border-transparent",
+          level === "rage"
+            ? "bg-red-50 border-red-200"
+            : level === "shout"
+            ? "bg-orange-50 border-orange-200"
+            : "bg-stone-50 border-stone-200"
+        )}
         required
       />
 
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? <Loader2 size={16} className="animate-spin" /> : "吐出来！"}
+        {loading ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : level === "rage" ? (
+          "暴怒输出！"
+        ) : level === "shout" ? (
+          "大声说出来！"
+        ) : (
+          "小声bb..."
+        )}
       </Button>
     </form>
   );

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, Trophy, RotateCcw } from "lucide-react";
+import { Heart, Trophy, RotateCcw, Flame } from "lucide-react";
 import { toast } from "sonner";
-import { COUPLE } from "@/lib/constants";
+import { COUPLE, WHACK_ROASTS, GAME_REVIEWS } from "@/lib/constants";
 import { saveWhackAMoleBestScore } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
@@ -132,6 +132,12 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
       scoreRef.current += 1;
       setScore(scoreRef.current);
       setHitAnim((current) => [...current, pos]);
+
+      // Show roast toast
+      const opponent = player === "playerA" ? COUPLE.partnerB : COUPLE.partnerA;
+      const roast = WHACK_ROASTS[Math.floor(Math.random() * WHACK_ROASTS.length)].replace("{name}", opponent);
+      toast(roast, { duration: 1500 });
+
       setTimeout(() => {
         setHitAnim((current) => current.filter((item) => item !== pos));
       }, 260);
@@ -222,6 +228,15 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
   }
 
   if (phase === "result") {
+    const review = GAME_REVIEWS.find((r) => score >= r.min && score <= r.max) || GAME_REVIEWS[0];
+    const ReviewIcon = {
+      Frown: () => <span className="text-stone-400">...</span>,
+      Meh: () => <span className="text-stone-400">--</span>,
+      Smile: () => <span className="text-warm-400">+1</span>,
+      Flame: () => <Flame size={20} className="text-orange-500" />,
+      Trophy: () => <Trophy size={20} className="text-amber-500" />,
+    }[review.icon] || (() => null);
+
     return (
       <div className="text-center space-y-6">
         <div className="inline-flex p-4 rounded-full bg-warm-100 text-warm-500">
@@ -237,6 +252,9 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
             {score}
           </p>
           <p className="text-sm text-stone-400 mt-1">分</p>
+          <p className="text-sm text-stone-500 mt-2 inline-flex items-center gap-1">
+            <ReviewIcon /> {review.text}
+          </p>
         </div>
 
         {best > 0 && !isNewBest && (
@@ -266,6 +284,8 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
       </div>
     );
   }
+
+  const opponent = player === "playerA" ? COUPLE.partnerB : COUPLE.partnerA;
 
   return (
     <div className="space-y-6">
@@ -312,14 +332,14 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
                 isHit && "scale-75"
               )}
             >
-              <Heart
-                size={28}
-                fill={isMole ? "currentColor" : "none"}
+              <span
                 className={cn(
-                  "transition-all duration-150",
+                  "text-lg font-serif font-bold transition-all duration-150",
                   isMole ? "opacity-100" : "opacity-0"
                 )}
-              />
+              >
+                {opponent[0]}
+              </span>
             </button>
           );
         })}

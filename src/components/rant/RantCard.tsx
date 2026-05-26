@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, Check } from "lucide-react";
+import { Trash2, Check, Swords } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE } from "@/lib/constants";
@@ -82,14 +82,15 @@ export function RantCard({ rant }: { rant: Rant }) {
         {rant.acknowledged ? (
           <span className="inline-flex items-center gap-1 text-xs text-green-500">
             <Check size={12} />
-            已收到回应
+            已反击
           </span>
         ) : (
           <button
             onClick={handleAcknowledge}
-            className="text-xs px-3 py-1.5 rounded-full bg-warm-100 text-warm-600 hover:bg-warm-200 transition-colors"
+            className="text-xs px-3 py-1.5 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors inline-flex items-center gap-1"
           >
-            知道了！
+            <Swords size={12} />
+            反击！
           </button>
         )}
         <button

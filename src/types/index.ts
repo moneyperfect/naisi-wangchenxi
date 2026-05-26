@@ -112,3 +112,38 @@ export interface GameScore {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Challenge {
+  id: number;
+  challenge: string;
+  date: string;
+  completedByA: boolean;
+  completedByB: boolean;
+  createdAt: Date;
+}
+
+export interface Debate {
+  id: number;
+  topic: string;
+  optionA: string;
+  optionB: string;
+  createdAt: Date;
+}
+
+export interface DebateArgument {
+  id: number;
+  debateId: number;
+  author: string;
+  side: string;
+  argument: string;
+  createdAt: Date;
+}
+
+export interface Achievement {
+  id: number;
+  key: string;
+  unlockedByA: boolean;
+  unlockedByB: boolean;
+  unlockedAtA: Date | null;
+  unlockedAtB: Date | null;
+}

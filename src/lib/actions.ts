@@ -714,3 +714,141 @@ export async function deleteGame(id: number) {
   if (error) throw error;
   revalidatePath("/games");
 }
+
+// Challenge
+export async function getTodaysChallenge() {
+  const sb = createServerClient();
+  const today = new Date().toISOString().split("T")[0];
+  const { data, error } = await sb
+    .from("Challenge")
+    .select("*")
+    .eq("date", today)
+    .single();
+  if (error && error.code !== "PGRST116") throw error;
+  return data ? { ...data, createdAt: toDate(data.createdAt) } : null;
+}
+
+export async function createChallenge(challenge: string) {
+  const sb = createServerClient();
+  const today = new Date().toISOString().split("T")[0];
+  const { error } = await sb.from("Challenge").insert({
+    challenge,
+    date: today,
+  });
+  if (error) throw error;
+  revalidatePath("/challenge");
+}
+
+export async function completeChallenge(author: "A" | "B") {
+  const sb = createServerClient();
+  const today = new Date().toISOString().split("T")[0];
+  const field = author === "A" ? "completedByA" : "completedByB";
+  const { error } = await sb
+    .from("Challenge")
+    .update({ [field]: true })
+    .eq("date", today);
+  if (error) throw error;
+  revalidatePath("/challenge");
+}
+
+export async function getChallengeHistory() {
+  const sb = createServerClient();
+  const { data, error } = await sb
+    .from("Challenge")
+    .select("*")
+    .order("date", { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    ...r,
+    createdAt: toDate(r.createdAt),
+  }));
+}
+
+// Debate
+export async function getDebates() {
+  const sb = createServerClient();
+  const { data, error } = await sb
+    .from("Debate")
+    .select("*")
+    .order("createdAt", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    ...r,
+    createdAt: toDate(r.createdAt),
+  }));
+}
+
+export async function createDebate(topic: string, optionA: string, optionB: string) {
+  const sb = createServerClient();
+  const { error } = await sb.from("Debate").insert({
+    topic,
+    optionA,
+    optionB,
+  });
+  if (error) throw error;
+  revalidatePath("/debate");
+}
+
+export async function getDebateArguments(debateId: number) {
+  const sb = createServerClient();
+  const { data, error } = await sb
+    .from("DebateArgument")
+    .select("*")
+    .eq("debateId", debateId)
+    .order("createdAt", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    ...r,
+    createdAt: toDate(r.createdAt),
+  }));
+}
+
+export async function submitDebateArgument(
+  debateId: number,
+  author: string,
+  side: string,
+  argument: string
+) {
+  const sb = createServerClient();
+  const { error } = await sb.from("DebateArgument").insert({
+    debateId,
+    author,
+    side,
+    argument,
+  });
+  if (error) throw error;
+  revalidatePath("/debate");
+}
+
+export async function deleteDebate(id: number) {
+  const sb = createServerClient();
+  const { error } = await sb.from("Debate").delete().eq("id", id);
+  if (error) throw error;
+  revalidatePath("/debate");
+}
+
+// Achievement
+export async function getAchievements() {
+  const sb = createServerClient();
+  const { data, error } = await sb.from("Achievement").select("*");
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    ...r,
+    unlockedAtA: r.unlockedAtA ? toDate(r.unlockedAtA) : null,
+    unlockedAtB: r.unlockedAtB ? toDate(r.unlockedAtB) : null,
+  }));
+}
+
+export async function unlockAchievement(key: string, author: "A" | "B") {
+  const sb = createServerClient();
+  const field = author === "A" ? "unlockedByA" : "unlockedByB";
+  const timeField = author === "A" ? "unlockedAtA" : "unlockedAtB";
+  const { error } = await sb
+    .from("Achievement")
+    .upsert(
+      { key, [field]: true, [timeField]: new Date().toISOString() },
+      { onConflict: "key" }
+    );
+  if (error) throw error;
+}

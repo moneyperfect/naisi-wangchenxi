@@ -7,9 +7,28 @@ import {
   Gamepad2,
   MessageSquare,
   Heart,
+  Target,
+  Swords,
+  Trophy,
 } from "lucide-react";
 
 const features = [
+  {
+    href: "/challenge",
+    icon: Target,
+    title: "今日挑战",
+    description: "每天一个情侣挑战",
+    color: "bg-violet-50 text-violet-500",
+    isNew: true,
+  },
+  {
+    href: "/debate",
+    icon: Swords,
+    title: "辩论场",
+    description: "选边站，看谁有理",
+    color: "bg-amber-50 text-amber-500",
+    isNew: true,
+  },
   {
     href: "/wishlist",
     icon: Sparkles,
@@ -64,8 +83,13 @@ export default function MorePage() {
             <Link
               key={f.href}
               href={f.href}
-              className="bg-white/60 backdrop-blur-sm rounded-3xl p-5 border border-warm-200/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              className="relative bg-white/60 rounded-3xl p-5 border border-warm-200/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
+              {f.isNew && (
+                <span className="absolute top-3 right-3 text-[10px] px-2 py-0.5 rounded-full bg-warm-500 text-white font-medium">
+                  新
+                </span>
+              )}
               <div
                 className={`w-10 h-10 rounded-2xl flex items-center justify-center mb-3 ${f.color}`}
               >

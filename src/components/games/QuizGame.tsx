@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { Heart, Trophy, RotateCcw, Plus } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { COUPLE } from "@/lib/constants";
+import { COUPLE, QUIZ_ROASTS } from "@/lib/constants";
 import { QuestionForm } from "./QuestionForm";
 import type { QuizQuestion } from "@/types";
 
@@ -33,6 +34,9 @@ export function QuizGame({ questions }: QuizGameProps) {
     setSelected(option);
     if (option === question.correct) {
       setScore((s) => s + 1);
+    } else {
+      const roast = QUIZ_ROASTS[Math.floor(Math.random() * QUIZ_ROASTS.length)];
+      toast.error(roast, { duration: 2000 });
     }
     setTimeout(() => {
       if (current + 1 < total) {
