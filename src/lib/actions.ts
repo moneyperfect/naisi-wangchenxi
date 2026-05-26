@@ -720,7 +720,7 @@ export async function getTodaysChallenge() {
   const sb = createServerClient();
   const today = new Date().toISOString().split("T")[0];
   const { data, error } = await sb
-    .from("Challenge")
+    .from("challenge")
     .select("*")
     .eq("date", today)
     .maybeSingle();
@@ -728,13 +728,21 @@ export async function getTodaysChallenge() {
     console.error("[getTodaysChallenge]", JSON.stringify(error));
     throw new Error(`查询挑战失败: ${error.message} (code: ${error.code})`);
   }
-  return data ? { ...data, createdAt: toDate(data.createdAt) } : null;
+  if (!data) return null;
+  return {
+    id: data.id,
+    challenge: data.challenge,
+    date: data.date,
+    completedByA: data.completed_by_a ?? false,
+    completedByB: data.completed_by_b ?? false,
+    createdAt: toDate(data.created_at),
+  };
 }
 
 export async function createChallenge(challenge: string) {
   const sb = createServerClient();
   const today = new Date().toISOString().split("T")[0];
-  const { data, error } = await sb.from("Challenge").insert({
+  const { data, error } = await sb.from("challenge").insert({
     challenge,
     date: today,
   }).select();
@@ -748,9 +756,9 @@ export async function createChallenge(challenge: string) {
 export async function completeChallenge(author: "A" | "B") {
   const sb = createServerClient();
   const today = new Date().toISOString().split("T")[0];
-  const field = author === "A" ? "completedByA" : "completedByB";
+  const field = author === "A" ? "completed_by_a" : "completed_by_b";
   const { error } = await sb
-    .from("Challenge")
+    .from("challenge")
     .update({ [field]: true })
     .eq("date", today);
   if (error) {
@@ -763,7 +771,7 @@ export async function completeChallenge(author: "A" | "B") {
 export async function getChallengeHistory() {
   const sb = createServerClient();
   const { data, error } = await sb
-    .from("Challenge")
+    .from("challenge")
     .select("*")
     .order("date", { ascending: false })
     .limit(30);
@@ -772,8 +780,12 @@ export async function getChallengeHistory() {
     throw new Error(`查询历史失败: ${error.message} (code: ${error.code})`);
   }
   return (data ?? []).map((r) => ({
-    ...r,
-    createdAt: toDate(r.createdAt),
+    id: r.id,
+    challenge: r.challenge,
+    date: r.date,
+    completedByA: r.completed_by_a ?? false,
+    completedByB: r.completed_by_b ?? false,
+    createdAt: toDate(r.created_at),
   }));
 }
 
@@ -781,25 +793,28 @@ export async function getChallengeHistory() {
 export async function getDebates() {
   const sb = createServerClient();
   const { data, error } = await sb
-    .from("Debate")
+    .from("debate")
     .select("*")
-    .order("createdAt", { ascending: false });
+    .order("created_at", { ascending: false });
   if (error) {
     console.error("[getDebates]", JSON.stringify(error));
     throw new Error(`查询辩论失败: ${error.message} (code: ${error.code})`);
   }
   return (data ?? []).map((r) => ({
-    ...r,
-    createdAt: toDate(r.createdAt),
+    id: r.id,
+    topic: r.topic,
+    optionA: r.option_a,
+    optionB: r.option_b,
+    createdAt: toDate(r.created_at),
   }));
 }
 
 export async function createDebate(topic: string, optionA: string, optionB: string) {
   const sb = createServerClient();
-  const { data, error } = await sb.from("Debate").insert({
+  const { data, error } = await sb.from("debate").insert({
     topic,
-    optionA,
-    optionB,
+    option_a: optionA,
+    option_b: optionB,
   }).select();
   if (error) {
     console.error("[createDebate]", JSON.stringify(error));
@@ -811,17 +826,17 @@ export async function createDebate(topic: string, optionA: string, optionB: stri
 export async function getDebateArguments(debateId: number) {
   const sb = createServerClient();
   const { data, error } = await sb
-    .from("DebateArgument")
+    .from("debate_argument")
     .select("*")
-    .eq("debateId", debateId)
-    .order("createdAt", { ascending: true });
+    .eq("debate_id", debateId)
+    .order("created_at", { ascending: true });
   if (error) {
     console.error("[getDebateArguments]", JSON.stringify(error));
     throw new Error(`查询论点失败: ${error.message} (code: ${error.code})`);
   }
   return (data ?? []).map((r) => ({
     ...r,
-    createdAt: toDate(r.createdAt),
+    createdAt: toDate(r.created_at),
   }));
 }
 
@@ -832,8 +847,8 @@ export async function submitDebateArgument(
   argument: string
 ) {
   const sb = createServerClient();
-  const { error } = await sb.from("DebateArgument").insert({
-    debateId,
+  const { error } = await sb.from("debate_argument").insert({
+    debate_id: debateId,
     author,
     side,
     argument,
@@ -847,7 +862,7 @@ export async function submitDebateArgument(
 
 export async function deleteDebate(id: number) {
   const sb = createServerClient();
-  const { error } = await sb.from("Debate").delete().eq("id", id);
+  const { error } = await sb.from("debate").delete().eq("id", id);
   if (error) {
     console.error("[deleteDebate]", JSON.stringify(error));
     throw new Error(`删除辩论失败: ${error.message} (code: ${error.code})`);
@@ -858,24 +873,27 @@ export async function deleteDebate(id: number) {
 // Achievement
 export async function getAchievements() {
   const sb = createServerClient();
-  const { data, error } = await sb.from("Achievement").select("*");
+  const { data, error } = await sb.from("achievement").select("*");
   if (error) {
     console.error("[getAchievements]", JSON.stringify(error));
     throw new Error(`查询成就失败: ${error.message} (code: ${error.code})`);
   }
   return (data ?? []).map((r) => ({
-    ...r,
-    unlockedAtA: r.unlockedAtA ? toDate(r.unlockedAtA) : null,
-    unlockedAtB: r.unlockedAtB ? toDate(r.unlockedAtB) : null,
+    id: r.id,
+    key: r.key,
+    unlockedByA: r.unlocked_by_a ?? false,
+    unlockedByB: r.unlocked_by_b ?? false,
+    unlockedAtA: r.unlocked_at_a ? toDate(r.unlocked_at_a) : null,
+    unlockedAtB: r.unlocked_at_b ? toDate(r.unlocked_at_b) : null,
   }));
 }
 
 export async function unlockAchievement(key: string, author: "A" | "B") {
   const sb = createServerClient();
-  const field = author === "A" ? "unlockedByA" : "unlockedByB";
-  const timeField = author === "A" ? "unlockedAtA" : "unlockedAtB";
+  const field = author === "A" ? "unlocked_by_a" : "unlocked_by_b";
+  const timeField = author === "A" ? "unlocked_at_a" : "unlocked_at_b";
   const { error } = await sb
-    .from("Achievement")
+    .from("achievement")
     .upsert(
       { key, [field]: true, [timeField]: new Date().toISOString() },
       { onConflict: "key" }
