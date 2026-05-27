@@ -43,14 +43,19 @@ export function InitialLoadingOverlay() {
 
     setShow(true);
     const timer = window.setTimeout(() => setShow(false), INITIAL_LOADING_MS);
+    // iOS Safari 安全超时：3 秒后强制隐藏
+    const safetyTimer = window.setTimeout(() => setShow(false), 3000);
 
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(safetyTimer);
+    };
   }, [pathname]);
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[80]" style={{ backgroundColor: "#fffbf7" }}>
+    <div className="fixed inset-0 z-[80] pointer-events-none">
       <LoveLoading fullScreen />
     </div>
   );

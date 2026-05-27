@@ -79,13 +79,19 @@ export function LoveLockVideoTransition({
     handleStartUnlocking();
   }, [autoPlay, motionPreferenceKnown, stage]);
 
+  // iOS 上检测到不允许动画时，直接跳过入场
+  useEffect(() => {
+    if (!allowsMotion && stage === "locked") {
+      completeIntro();
+    }
+  }, [allowsMotion, stage]);
+
   return (
-    <div className="relative min-h-screen w-full overflow-hidden" style={{ backgroundColor: "#fffbf7" }}>
+    <div className="relative min-h-screen w-full overflow-hidden">
       <AnimatePresence>
         {stage !== "unlocked" && (
           <motion.div
-            className="absolute inset-0 z-[60] flex cursor-pointer items-center justify-center px-6"
-            style={{ backgroundColor: "#fffbf7" }}
+            className="absolute inset-0 z-[60] flex cursor-pointer items-center justify-center px-6 bg-cream"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.03 }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
