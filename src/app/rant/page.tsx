@@ -7,6 +7,7 @@ import { getRants } from "@/lib/actions";
 import { RantSkeleton } from "@/components/rant/RantSkeleton";
 import { RantCard } from "@/components/rant/RantCard";
 import { RantAddButton } from "./RantAddButton";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -37,13 +38,13 @@ async function RantContent() {
 
 export default function RantPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="吐槽墙" showBack action={<RantAddButton />} />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<RantSkeleton />}>
           <RantContent />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

@@ -6,6 +6,7 @@ import { StorySkeleton } from "@/components/story/StorySkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StoryList } from "./StoryList";
 import { BookHeart } from "lucide-react";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +29,13 @@ async function StoryContent() {
 
 export default function StoryPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="我们的故事" showBack action={<StoryAddButton />} />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<StorySkeleton />}>
           <StoryContent />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

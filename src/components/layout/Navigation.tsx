@@ -25,7 +25,7 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 border-t border-warm-200/50">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 border-t border-warm-200/50 safe-area-bottom">
       <div className="mx-auto max-w-lg flex justify-around items-center h-16 px-0">
         {links.map(({ href, icon: Icon, label }) => {
           const isActive =
@@ -35,7 +35,7 @@ export function Navigation() {
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-2 py-1.5 rounded-xl transition-all duration-200",
+                "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-2 py-1.5 rounded-xl transition-all duration-200 active:scale-90 active:bg-warm-50",
                 isActive
                   ? "text-warm-600 scale-105"
                   : "text-stone-400 hover:text-warm-500"

@@ -11,27 +11,12 @@ type LoveLoadingProps = {
   className?: string;
 };
 
-function useAllowsMotion() {
-  const [allowsMotion, setAllowsMotion] = useState(true);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-    if (isIOS) {
-      setAllowsMotion(false);
-      return;
-    }
-
-    const syncPreference = () => setAllowsMotion(!mediaQuery.matches);
-    syncPreference();
-    mediaQuery.addEventListener("change", syncPreference);
-
-    return () => mediaQuery.removeEventListener("change", syncPreference);
-  }, []);
-
-  return allowsMotion;
+function getInitialAllowsMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return false;
+  if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return false;
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 export function LoveLoading({
@@ -49,7 +34,7 @@ export function LoveLoading({
 
     return shouldSkip;
   });
-  const allowsMotion = useAllowsMotion();
+  const allowsMotion = getInitialAllowsMotion();
   const [videoFailed, setVideoFailed] = useState(false);
 
   if (skipLoading) return null;
@@ -69,7 +54,7 @@ export function LoveLoading({
         {!videoFailed && allowsMotion ? (
           <video
             src={LOADING_VIDEO_SRC}
-            className="size-24 object-contain sm:size-[120px]"
+            className="size-24 object-contain sm:size-[120px] bg-cream rounded-xl"
             autoPlay
             loop
             muted

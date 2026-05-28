@@ -14,27 +14,12 @@ type PageTransitionProps = {
 
 type Stage = "locked" | "unlocking" | "unlocked";
 
-function useAllowsMotion() {
-  const [allowsMotion, setAllowsMotion] = useState(true);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-    if (isIOS) {
-      setAllowsMotion(false);
-      return;
-    }
-
-    const syncPreference = () => setAllowsMotion(!mediaQuery.matches);
-    syncPreference();
-    mediaQuery.addEventListener("change", syncPreference);
-
-    return () => mediaQuery.removeEventListener("change", syncPreference);
-  }, []);
-
-  return allowsMotion;
+function getInitialAllowsMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return false;
+  if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return false;
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 export function LoveLockVideoTransition({
@@ -42,9 +27,9 @@ export function LoveLockVideoTransition({
   autoPlay = false,
   onAnimationComplete,
 }: PageTransitionProps) {
-  const [stage, setStage] = useState<Stage>("locked");
+  const allowsMotion = getInitialAllowsMotion();
+  const [stage, setStage] = useState<Stage>(allowsMotion ? "locked" : "unlocked");
   const videoRef = useRef<HTMLVideoElement>(null);
-  const allowsMotion = useAllowsMotion();
   const motionPreferenceKnown = true;
 
   function completeIntro() {
@@ -79,13 +64,6 @@ export function LoveLockVideoTransition({
     handleStartUnlocking();
   }, [autoPlay, motionPreferenceKnown, stage]);
 
-  // iOS 上检测到不允许动画时，直接跳过入场
-  useEffect(() => {
-    if (!allowsMotion && stage === "locked") {
-      completeIntro();
-    }
-  }, [allowsMotion, stage]);
-
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <AnimatePresence>
@@ -101,7 +79,7 @@ export function LoveLockVideoTransition({
               <video
                 ref={videoRef}
                 src={INTRO_VIDEO_SRC}
-                className="w-56 object-contain sm:w-72"
+                className="w-56 object-contain sm:w-72 bg-cream rounded-2xl"
                 muted
                 playsInline
                 preload="auto"

@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { DailyClient } from "@/components/daily/DailyClient";
 import { DailySkeleton } from "@/components/daily/DailySkeleton";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -21,13 +22,13 @@ async function DailyContent() {
 
 export default function DailyPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="今日一问" showBack />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<DailySkeleton />}>
           <DailyContent />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

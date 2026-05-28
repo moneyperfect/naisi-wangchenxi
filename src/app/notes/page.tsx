@@ -10,6 +10,7 @@ import { NoteSkeleton } from "@/components/notes/NoteSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { MessageCircleHeart } from "lucide-react";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 async function NoteList() {
   const notes = await getLetters();
@@ -38,13 +39,13 @@ async function NoteList() {
 
 export default function NotesPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="心里话" showBack action={<NoteAddButton />} />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<NoteSkeleton />}>
           <NoteList />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

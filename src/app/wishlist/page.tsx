@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { Sparkles } from "lucide-react";
 import type { Wishlist } from "@/types";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -103,13 +104,13 @@ async function WishlistContent() {
 
 export default function WishlistPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="心愿清单" showBack action={<WishlistAddButton />} />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<WishlistSkeleton />}>
           <WishlistContent />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

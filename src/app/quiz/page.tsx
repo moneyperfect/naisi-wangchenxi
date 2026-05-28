@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getQuizQuestions } from "@/lib/actions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { QuizGame } from "@/components/games/QuizGame";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ async function QuizContent() {
 
 export default function QuizPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="默契测试" showBack />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense
@@ -28,6 +29,6 @@ export default function QuizPage() {
           <QuizContent />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

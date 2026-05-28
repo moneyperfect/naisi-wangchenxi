@@ -9,6 +9,7 @@ import { AnniversarySkeleton } from "@/components/anniversary/AnniversarySkeleto
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { Calendar } from "lucide-react";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 async function AnniversaryList() {
   const anniversaries = await getAnniversaries();
@@ -37,13 +38,13 @@ async function AnniversaryList() {
 
 export default function AnniversaryPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="纪念日" showBack action={<AnniversaryAddButton />} />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<AnniversarySkeleton />}>
           <AnniversaryList />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

@@ -9,6 +9,7 @@ import { PhotoSkeleton } from "@/components/album/PhotoSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { Image } from "lucide-react";
+import { PageWrapper } from "@/components/ui/PageWrapper";
 
 async function PhotoList() {
   const photos = await getPhotos();
@@ -37,13 +38,13 @@ async function PhotoList() {
 
 export default function AlbumPage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="相册" showBack action={<AlbumUploadButton />} />
       <div className="mx-auto max-w-lg px-4 py-6">
         <Suspense fallback={<PhotoSkeleton />}>
           <PhotoList />
         </Suspense>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

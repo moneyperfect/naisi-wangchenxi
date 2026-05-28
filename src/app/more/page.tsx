@@ -1,4 +1,6 @@
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageWrapper } from "@/components/ui/PageWrapper";
+import { DataManager } from "@/components/ui/DataManager";
 import Link from "next/link";
 import {
   Sparkles,
@@ -75,7 +77,7 @@ const features = [
 
 export default function MorePage() {
   return (
-    <div>
+    <PageWrapper>
       <PageHeader title="更多" showBack />
       <div className="mx-auto max-w-lg px-4 py-6">
         <div className="grid grid-cols-2 gap-3">
@@ -102,7 +104,11 @@ export default function MorePage() {
             </Link>
           ))}
         </div>
+
+        <div className="mt-8 p-4 rounded-2xl bg-white/60 border border-warm-200/30">
+          <DataManager />
+        </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
