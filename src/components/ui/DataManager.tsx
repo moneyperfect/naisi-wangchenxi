@@ -4,10 +4,7 @@ import { useState } from "react";
 import { Download, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-const STORAGE_KEYS = [
-  "couple-challenges",
-  "couple-debates",
-];
+const STORAGE_KEYS: string[] = [];
 
 export function DataManager() {
   const [importing, setImporting] = useState(false);

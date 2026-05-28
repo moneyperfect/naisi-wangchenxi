@@ -1,111 +1,90 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Swords, Plus, Send, X } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Swords, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE, DEBATE_TOPICS } from "@/lib/constants";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { createDebate, submitDebateArgument, deleteDebate } from "@/lib/actions";
 import type { Debate, DebateArgument } from "@/types";
 
-const STORAGE_KEY = "couple-debates";
+type DebateWithArgs = Debate & { arguments: DebateArgument[] };
 
-type LocalDebate = Debate & { arguments: DebateArgument[] };
-
-function loadDebates(): LocalDebate[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+interface DebateClientProps {
+  debates: DebateWithArgs[];
 }
 
-function saveDebates(debates: LocalDebate[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(debates));
-}
-
-export function DebateClient() {
-  const [debates, setDebates] = useState<LocalDebate[]>([]);
+export function DebateClient({ debates }: DebateClientProps) {
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [activeDebate, setActiveDebate] = useState<number | null>(null);
   const [selectedSide, setSelectedSide] = useState<string | null>(null);
   const [argument, setArgument] = useState("");
   const [author, setAuthor] = useState<"A" | "B">("A");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setDebates(loadDebates());
-  }, []);
-
-  function handleCreateRandom() {
-    const idx = Math.floor(Math.random() * DEBATE_TOPICS.length);
-    const topic = DEBATE_TOPICS[idx];
-    const newDebate: LocalDebate = {
-      id: Date.now(),
-      topic: topic.topic,
-      optionA: topic.optionA,
-      optionB: topic.optionB,
-      createdAt: new Date(),
-      arguments: [],
-    };
-    const updated = [newDebate, ...debates];
-    saveDebates(updated);
-    setDebates(updated);
-    toast.success("辩题已创建！");
+  async function handleCreateRandom() {
+    setLoading(true);
+    try {
+      const idx = Math.floor(Math.random() * DEBATE_TOPICS.length);
+      const topic = DEBATE_TOPICS[idx];
+      await createDebate(topic.topic, topic.optionA, topic.optionB);
+      toast.success("辩题已创建！");
+      router.refresh();
+    } catch {
+      toast.error("创建失败，请重试");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleCreateCustom(e: React.FormEvent<HTMLFormElement>) {
+  async function handleCreateCustom(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
     const form = new FormData(e.currentTarget);
     const topic = form.get("topic") as string;
     const optionA = form.get("optionA") as string;
     const optionB = form.get("optionB") as string;
-    const newDebate: LocalDebate = {
-      id: Date.now(),
-      topic,
-      optionA,
-      optionB,
-      createdAt: new Date(),
-      arguments: [],
-    };
-    const updated = [newDebate, ...debates];
-    saveDebates(updated);
-    setDebates(updated);
-    setShowForm(false);
-    toast.success("辩题已创建！");
+    try {
+      await createDebate(topic, optionA, optionB);
+      setShowForm(false);
+      toast.success("辩题已创建！");
+      router.refresh();
+    } catch {
+      toast.error("创建失败，请重试");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleSubmitArgument(debateId: number, side: string) {
+  async function handleSubmitArgument(debateId: number, side: string) {
     if (!argument.trim()) {
       toast.error("请写下你的论点");
       return;
     }
-    const newArg: DebateArgument = {
-      id: Date.now(),
-      debateId,
-      author,
-      side,
-      argument: argument.trim(),
-      createdAt: new Date(),
-    };
-    const updated = debates.map((d) =>
-      d.id === debateId ? { ...d, arguments: [...d.arguments, newArg] } : d
-    );
-    saveDebates(updated);
-    setDebates(updated);
-    setArgument("");
-    setSelectedSide(null);
-    setActiveDebate(null);
-    toast.success("论点已提交！");
+    try {
+      await submitDebateArgument(debateId, author, side, argument.trim());
+      setArgument("");
+      setSelectedSide(null);
+      setActiveDebate(null);
+      toast.success("论点已提交！");
+      router.refresh();
+    } catch {
+      toast.error("提交失败，请重试");
+    }
   }
 
-  function handleDelete(id: number) {
+  async function handleDelete(id: number) {
     if (!window.confirm("确定要删除这个辩题吗？")) return;
-    const updated = debates.filter((d) => d.id !== id);
-    saveDebates(updated);
-    setDebates(updated);
-    toast.success("已删除");
+    try {
+      await deleteDebate(id);
+      toast.success("已删除");
+      router.refresh();
+    } catch {
+      toast.error("删除失败，请重试");
+    }
   }
 
   return (
@@ -121,9 +100,10 @@ export function DebateClient() {
       <div className="flex gap-3">
         <button
           onClick={handleCreateRandom}
-          className="flex-1 py-3 rounded-2xl bg-amber-500 text-white font-medium hover:bg-amber-600 active:scale-95 transition-all"
+          disabled={loading}
+          className="flex-1 py-3 rounded-2xl bg-amber-500 text-white font-medium hover:bg-amber-600 active:scale-95 transition-all disabled:opacity-50"
         >
-          随机辩题
+          {loading ? "创建中..." : "随机辩题"}
         </button>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -160,9 +140,10 @@ export function DebateClient() {
           </div>
           <button
             type="submit"
-            className="w-full py-2.5 rounded-xl bg-amber-500 text-white font-medium hover:bg-amber-600 transition-all"
+            disabled={loading}
+            className="w-full py-2.5 rounded-xl bg-amber-500 text-white font-medium hover:bg-amber-600 transition-all disabled:opacity-50"
           >
-            创建辩题
+            {loading ? "创建中..." : "创建辩题"}
           </button>
         </form>
       )}

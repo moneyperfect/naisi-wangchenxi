@@ -1,17 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Target, Check, Trophy, History } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE, CHALLENGES } from "@/lib/constants";
+import { createChallenge, completeChallenge } from "@/lib/actions";
 import type { Challenge } from "@/types";
-
-const STORAGE_KEY = "couple-challenges";
-
-function getToday() {
-  return new Date().toISOString().split("T")[0];
-}
 
 function getDayIndex() {
   const now = new Date();
@@ -19,59 +15,41 @@ function getDayIndex() {
   return Math.floor((now.getTime() - start.getTime()) / 86400000);
 }
 
-function loadChallenges(): Challenge[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+interface ChallengeClientProps {
+  todayChallenge: Challenge | null;
+  history: Challenge[];
 }
 
-function saveChallenges(challenges: Challenge[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(challenges));
-}
-
-export function ChallengeClient() {
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+export function ChallengeClient({ todayChallenge, history }: ChallengeClientProps) {
+  const router = useRouter();
   const [showHistory, setShowHistory] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setChallenges(loadChallenges());
-  }, []);
-
-  const today = getToday();
-  const todayChallenge = challenges.find((c) => c.date === today) ?? null;
-  const history = challenges.filter((c) => c.date !== today).sort((a, b) => b.date.localeCompare(a.date));
-
-  function handleCreate() {
-    const idx = getDayIndex() % CHALLENGES.length;
-    const newChallenge: Challenge = {
-      id: Date.now(),
-      challenge: CHALLENGES[idx],
-      date: today,
-      completedByA: false,
-      completedByB: false,
-      createdAt: new Date(),
-    };
-    const updated = [...challenges, newChallenge];
-    saveChallenges(updated);
-    setChallenges(updated);
-    toast.success("挑战已生成！");
+  async function handleCreate() {
+    setLoading(true);
+    try {
+      const idx = getDayIndex() % CHALLENGES.length;
+      await createChallenge(CHALLENGES[idx]);
+      toast.success("挑战已生成！");
+      router.refresh();
+    } catch {
+      toast.error("创建失败，请重试");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleComplete(author: "A" | "B") {
+  async function handleComplete(author: "A" | "B") {
     if (!todayChallenge) return;
-    const field = author === "A" ? "completedByA" : "completedByB";
-    const updated = challenges.map((c) =>
-      c.date === today ? { ...c, [field]: true } : c
-    );
-    saveChallenges(updated);
-    setChallenges(updated);
-    toast.success(
-      author === "A" ? `${COUPLE.partnerA} 完成了！` : `${COUPLE.partnerB} 完成了！`
-    );
+    try {
+      await completeChallenge(author);
+      toast.success(
+        author === "A" ? `${COUPLE.partnerA} 完成了！` : `${COUPLE.partnerB} 完成了！`
+      );
+      router.refresh();
+    } catch {
+      toast.error("操作失败，请重试");
+    }
   }
 
   const bothDone = todayChallenge?.completedByA && todayChallenge?.completedByB;
@@ -91,9 +69,10 @@ export function ChallengeClient() {
           <p className="text-sm text-stone-400">今天还没有挑战</p>
           <button
             onClick={handleCreate}
-            className="px-6 py-3 rounded-2xl bg-violet-500 text-white font-medium hover:bg-violet-600 active:scale-95 transition-all"
+            disabled={loading}
+            className="px-6 py-3 rounded-2xl bg-violet-500 text-white font-medium hover:bg-violet-600 active:scale-95 transition-all disabled:opacity-50"
           >
-            生成今日挑战
+            {loading ? "生成中..." : "生成今日挑战"}
           </button>
         </div>
       ) : (
