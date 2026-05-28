@@ -1,5 +1,7 @@
+"use client";
+
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface PageHeaderProps {
   title: string;
@@ -8,16 +10,26 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, showBack = false, action }: PageHeaderProps) {
+  const router = useRouter();
+
+  function handleBack() {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  }
+
   return (
     <div className="sticky top-0 z-40 bg-warm-50/95 border-b border-warm-200/30">
       <div className="mx-auto max-w-lg flex items-center justify-between h-14 px-4">
         {showBack ? (
-          <Link
-            href="/"
+          <button
+            onClick={handleBack}
             className="p-2 -ml-2 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-500 hover:text-warm-600 hover:bg-warm-100 transition-colors"
           >
             <ArrowLeft size={20} />
-          </Link>
+          </button>
         ) : (
           <div className="w-9" />
         )}

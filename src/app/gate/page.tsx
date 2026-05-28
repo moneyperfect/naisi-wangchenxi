@@ -1,5 +1,11 @@
 import { Heart, Lock } from "lucide-react";
 import { COUPLE } from "@/lib/constants";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: `${COUPLE.partnerA} & ${COUPLE.partnerB}`,
+  description: COUPLE.siteTitle,
+};
 
 type GatePageProps = {
   searchParams?: Promise<{

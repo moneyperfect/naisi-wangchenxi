@@ -79,7 +79,7 @@ export function WishlistCard({ item }: WishlistCardProps) {
           <select
             value={completedBy}
             onChange={(e) => setCompletedBy(e.target.value as "A" | "B")}
-            className="text-[10px] bg-transparent text-stone-400 border-none focus:outline-none cursor-pointer"
+            className="text-xs py-1 bg-transparent text-stone-400 border-none focus:outline-none cursor-pointer"
           >
             <option value="A">{COUPLE.partnerA}</option>
             <option value="B">{COUPLE.partnerB}</option>
@@ -117,7 +117,7 @@ export function WishlistCard({ item }: WishlistCardProps) {
       {/* Delete button */}
       <button
         onClick={handleDelete}
-        className="absolute top-2 right-2 p-1.5 rounded-full text-stone-300 hover:text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all"
+        className="absolute top-2 right-2 p-1.5 rounded-full text-stone-300 hover:text-rose-500 hover:bg-rose-50 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
       >
         <Trash2 size={14} />
       </button>

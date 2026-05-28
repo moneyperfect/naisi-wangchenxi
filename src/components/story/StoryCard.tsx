@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, Smile, Heart, Frown, HelpCircle, ThumbsUp, Sparkles, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE } from "@/lib/constants";
@@ -10,14 +10,21 @@ import { Modal } from "@/components/ui/Modal";
 import { StoryForm } from "./StoryForm";
 import type { StoryItem } from "@/types";
 
-const moodEmojis: Record<string, string> = {
-  happy: "😊",
-  love: "🥰",
-  sad: "😢",
-  thinking: "🤔",
-  grateful: "🙏",
-  excited: "🎉",
+const moodIcons: Record<string, { icon: LucideIcon; color: string }> = {
+  happy: { icon: Smile, color: "text-amber-500" },
+  love: { icon: Heart, color: "text-rose-500" },
+  sad: { icon: Frown, color: "text-sky-500" },
+  thinking: { icon: HelpCircle, color: "text-violet-500" },
+  grateful: { icon: ThumbsUp, color: "text-emerald-500" },
+  excited: { icon: Sparkles, color: "text-orange-500" },
 };
+
+function MoodIcon({ mood }: { mood: string }) {
+  const m = moodIcons[mood];
+  if (!m) return null;
+  const Icon = m.icon;
+  return <Icon size={12} className={m.color} />;
+}
 
 interface StoryCardProps {
   item: StoryItem;
@@ -79,14 +86,12 @@ function DiaryCard({
             <span className="text-xs font-medium text-stone-500">
               {authorName}
             </span>
-            {item.mood && (
-              <span className="text-xs">{moodEmojis[item.mood] || item.mood}</span>
-            )}
+            {item.mood && <MoodIcon mood={item.mood} />}
           </div>
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
             {item.content}
           </p>
-          <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-2 mt-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => setEditOpen(true)}
               className="p-1 rounded-full text-stone-400 hover:text-warm-500 hover:bg-warm-200/50 transition-colors"
@@ -151,7 +156,7 @@ function MilestoneCard({
                   {item.title}
                 </h3>
               </div>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
                 <button
                   onClick={() => setEditOpen(true)}
                   className="p-1 rounded-full text-stone-300 hover:text-warm-500 hover:bg-warm-100 transition-colors"

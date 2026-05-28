@@ -95,7 +95,7 @@ export function RantCard({ rant }: { rant: Rant }) {
         )}
         <button
           onClick={handleDelete}
-          className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"
         >
           <Trash2 size={14} />
         </button>
