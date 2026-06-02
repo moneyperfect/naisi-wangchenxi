@@ -25,7 +25,7 @@ export default async function GatePage({ searchParams }: GatePageProps) {
   const hasError = params?.error === "1";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-50 p-4">
+    <div className="flex items-center justify-center bg-stone-50 p-4" style={{ minHeight: "100dvh" }}>
       <div className="w-full max-w-sm space-y-8 text-center">
         <div className="space-y-4">
           <div className="inline-flex rounded-full bg-warm-100 p-4 text-warm-500">

@@ -25,7 +25,7 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 border-t border-warm-200/50 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 border-t border-warm-200/50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
       <div className="mx-auto max-w-lg flex justify-around items-center h-16 px-0">
         {links.map(({ href, icon: Icon, label }) => {
           const isActive =

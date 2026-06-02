@@ -26,12 +26,16 @@ export function PhotoCard({ photo }: PhotoCardProps) {
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
 
     return () => {
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
-      window.scrollTo(0, scrollY);
+      document.body.style.overflow = "";
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+      });
     };
   }, [lightbox]);
 
@@ -97,7 +101,8 @@ export function PhotoCard({ photo }: PhotoCardProps) {
               <img
                 src={photo.url}
                 alt={caption || "照片"}
-                className="max-h-[calc(100vh-8rem)] max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain shadow-xl shadow-stone-900/10"
+                className="max-w-[calc(100vw-2rem)] select-none rounded-xl object-contain shadow-xl shadow-stone-900/10"
+                style={{ maxHeight: "calc(100dvh - 8rem)" }}
                 draggable={false}
                 onClick={(event) => event.stopPropagation()}
               />

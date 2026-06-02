@@ -28,12 +28,17 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollYRef.current}px`;
     document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
 
     return () => {
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
-      window.scrollTo(0, scrollYRef.current);
+      document.body.style.overflow = "";
+      // iOS Safari: requestAnimationFrame 恢复滚动位置更可靠
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollYRef.current);
+      });
     };
   }, [isOpen]);
 
@@ -56,7 +61,8 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
               role="dialog"
               aria-modal="true"
               aria-label={title}
-              className="flex max-h-[calc(100vh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-warm-200/50 bg-warm-50 p-4 shadow-xl sm:p-6"
+              className="flex w-full max-w-md flex-col overflow-hidden rounded-3xl border border-warm-200/50 bg-warm-50 p-4 shadow-xl sm:p-6"
+              style={{ maxHeight: "calc(100dvh - 2rem)" }}
               initial={{ opacity: 0, scale: 0.94, y: 18 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 10 }}

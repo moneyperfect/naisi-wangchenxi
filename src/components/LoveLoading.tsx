@@ -13,9 +13,6 @@ type LoveLoadingProps = {
 
 function getInitialAllowsMotion(): boolean {
   if (typeof window === "undefined") return false;
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua)) return false;
-  if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return false;
   return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 

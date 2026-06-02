@@ -16,9 +16,6 @@ type Stage = "locked" | "unlocking" | "unlocked";
 
 function getInitialAllowsMotion(): boolean {
   if (typeof window === "undefined") return false;
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua)) return false;
-  if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return false;
   return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
@@ -65,7 +62,7 @@ export function LoveLockVideoTransition({
   }, [autoPlay, motionPreferenceKnown, stage]);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden" style={{ minHeight: "100dvh" }}>
       <AnimatePresence>
         {stage !== "unlocked" && (
           <motion.div

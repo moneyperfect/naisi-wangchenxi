@@ -52,6 +52,27 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* iOS 100vh fix: use dvh with -webkit-fill-available fallback */
+@supports (height: 100dvh) {
+  .min-h-screen-ios {
+    min-height: 100dvh;
+  }
+}
+
+/* Prevent iOS Safari elastic overscroll bounce */
+html, body {
+  overscroll-behavior: none;
+}
+
+/* Ensure inputs are at least 16px on iOS to prevent auto-zoom */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
 /* Smooth scroll */
 @media (prefers-reduced-motion: no-preference) {
   html {
