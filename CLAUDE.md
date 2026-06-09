@@ -16,6 +16,10 @@ npm run start    # 生产运行
 npm run lint     # ESLint 检查
 ```
 
+## 路径别名
+
+`@/*` → `./src/*`（tsconfig.json paths 配置）
+
 ## 技术栈
 
 - **框架:** Next.js 16 (App Router) + React 19 + TypeScript
@@ -35,10 +39,13 @@ npm run lint     # ESLint 检查
 - **类型定义:** `src/types/index.ts`
 - **常量/内容池:** `src/lib/constants.ts`（COUPLE 对象、LOVE_QUOTES、CHALLENGES、DEBATE_TOPICS、ACHIEVEMENTS 等）
 - **不使用 Prisma**，直接用 Supabase JS client
+- **Supabase 客户端不使用 cookies**：服务端直接用 `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` 创建客户端，无 cookie/session 管理
 - **数据库表名大小写不一致：** Challenge/Debate/Achievement 表用 snake_case（`completed_by_a`），其他表用 camelCase（`createdAt`）
+- **Mutation 后用 `revalidatePath()` 刷新缓存**，每个 Server Action 结尾都调用
 
 ### 认证 (proxy.ts)
 - `src/proxy.ts` — Next.js 16 的 proxy 机制（替代已弃用的 middleware.ts）
+- **导出格式**：`export async function proxy(req)` + `export const config`（不是 `middleware`）
 - 检查 `site_auth` cookie（SHA-256 哈希比对），未通过跳转 `/gate`
 - 白名单：`/gate`、`/api/gate`、静态资源
 - API: `src/app/api/gate/route.ts`（验证密码 + 设置 httpOnly cookie，30 天有效）
@@ -75,6 +82,15 @@ npm run lint     # ESLint 检查
 
 ### 路由过渡
 `src/app/template.tsx` 处理页面切换时的过渡遮罩（cream 背景色），通过 `sessionStorage("skip-next-route-loading")` 跳过特定导航的过渡动画。
+
+### 全局布局组件 (layout.tsx)
+根布局挂载了以下全局组件，新页面无需手动引入：
+- `Navigation` — 底部导航栏
+- `FloatingHearts` — 飘心动画
+- `InitialLoadingOverlay` — 首次加载遮罩
+- `MusicPlayer` — 背景音乐
+- `Toaster` — toast 通知（sonner，自定义 warm 色系样式）
+- `RegisterSW` — Service Worker 注册
 
 ## 设计规范
 

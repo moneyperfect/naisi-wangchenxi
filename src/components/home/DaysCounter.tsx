@@ -25,9 +25,12 @@ function AnimatedDigit({ value }: { value: number }) {
 }
 
 export function DaysCounter() {
-  const [time, setTime] = useState(getTimeDiff(COUPLE.startDate));
+  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    setTime(getTimeDiff(COUPLE.startDate));
     const interval = setInterval(() => {
       setTime(getTimeDiff(COUPLE.startDate));
     }, 1000);
@@ -39,16 +42,16 @@ export function DaysCounter() {
       <p className="text-sm text-stone-500 mb-3">我们已经在一起</p>
       <div className="inline-flex items-baseline gap-1">
         <span className="text-6xl font-serif font-bold text-warm-600 tabular-nums">
-          <AnimatedDigit value={time.days} />
+          {mounted ? <AnimatedDigit value={time.days} /> : <span className="invisible">0</span>}
         </span>
         <span className="text-xl text-stone-500 font-light">天</span>
       </div>
       <div className="flex justify-center gap-4 mt-3 text-stone-400">
-        <span className="text-sm tabular-nums">{time.hours}时</span>
+        <span className="text-sm tabular-nums">{mounted ? time.hours : " "}时</span>
         <span className="text-warm-300">·</span>
-        <span className="text-sm tabular-nums">{time.minutes}分</span>
+        <span className="text-sm tabular-nums">{mounted ? time.minutes : " "}分</span>
         <span className="text-warm-300">·</span>
-        <span className="text-sm tabular-nums">{time.seconds}秒</span>
+        <span className="text-sm tabular-nums">{mounted ? time.seconds : " "}秒</span>
       </div>
     </div>
   );

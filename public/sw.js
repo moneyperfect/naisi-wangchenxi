@@ -1,4 +1,4 @@
-const CACHE_NAME = "couples-v6";
+const CACHE_NAME = "couples-v7";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
@@ -14,9 +14,6 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-self.addEventListener("fetch", (e) => {
-  // Only cache GET requests, skip navigation and API calls
-  if (e.request.method !== "GET") return;
-  if (e.request.mode === "navigate") return;
-  if (e.request.url.includes("/api/")) return;
+self.addEventListener("fetch", () => {
+  // Network-only: no caching, just let browser handle it
 });
