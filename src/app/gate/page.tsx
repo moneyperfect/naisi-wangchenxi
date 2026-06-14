@@ -25,10 +25,10 @@ export default async function GatePage({ searchParams }: GatePageProps) {
   const hasError = params?.error === "1";
 
   return (
-    <div className="flex items-center justify-center bg-stone-50 p-4" style={{ minHeight: "100dvh" }}>
+    <div className="flex items-center justify-center bg-stone-50 p-4 min-h-dvh">
       <div className="w-full max-w-sm space-y-8 text-center">
         <div className="space-y-4">
-          <div className="inline-flex rounded-full bg-warm-100 p-4 text-warm-500">
+          <div className="inline-flex items-center justify-center rounded-full bg-warm-100 p-3 text-warm-500 min-w-[44px] min-h-[44px]">
             <Heart size={36} fill="currentColor" />
           </div>
           <div>
@@ -54,7 +54,7 @@ export default async function GatePage({ searchParams }: GatePageProps) {
               autoComplete="current-password"
               autoFocus
               required
-              className="w-full rounded-2xl border border-warm-200 bg-white py-3.5 pl-10 pr-4 text-center text-lg tracking-widest text-stone-800 transition-all placeholder:text-stone-300 focus:border-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-200"
+              className="w-full rounded-2xl border border-warm-200 bg-stone-50 py-3.5 pl-10 pr-4 text-center text-lg tracking-widest text-stone-800 transition-all placeholder:text-stone-300 focus:border-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-200 min-h-[44px] p-3"
             />
           </div>
 
@@ -64,7 +64,7 @@ export default async function GatePage({ searchParams }: GatePageProps) {
 
           <button
             type="submit"
-            className="w-full rounded-2xl bg-warm-500 py-3.5 font-medium text-white transition-all hover:bg-warm-600 active:scale-95"
+            className="w-full rounded-2xl bg-warm-500 py-3.5 px-6 font-medium text-white transition-all hover:bg-warm-600 active:scale-95 touch-manipulation min-h-[44px]"
           >
             进入
           </button>

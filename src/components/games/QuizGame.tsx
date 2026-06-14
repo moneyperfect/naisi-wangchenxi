@@ -34,9 +34,11 @@ export function QuizGame({ questions }: QuizGameProps) {
     setSelected(option);
     if (option === question.correct) {
       setScore((s) => s + 1);
+      toast.success("答对了！", { duration: 1500 });
     } else {
+      const correctAnswer = question[`option${question.correct}` as keyof QuizQuestion];
       const roast = QUIZ_ROASTS[Math.floor(Math.random() * QUIZ_ROASTS.length)];
-      toast.error(roast, { duration: 2000 });
+      toast.error(`${roast} 正确答案是 ${question.correct}. ${correctAnswer}`, { duration: 3000 });
     }
     setTimeout(() => {
       if (current + 1 < total) {
@@ -45,7 +47,7 @@ export function QuizGame({ questions }: QuizGameProps) {
       } else {
         setPhase("result");
       }
-    }, 800);
+    }, 1200);
   }
 
   function startGame() {

@@ -2,16 +2,16 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dices, PartyPopper } from "lucide-react";
+import { Dices, PartyPopper, Trees, Home, UtensilsCrossed, Rocket, Sparkles, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DateIdea } from "@/types";
 
-const typeEmoji: Record<string, string> = {
-  户外: "🌿",
-  室内: "🏠",
-  美食: "🍜",
-  冒险: "🚀",
-  其他: "✨",
+const typeIcons: Record<string, { icon: LucideIcon; color: string }> = {
+  户外: { icon: Trees, color: "text-emerald-500" },
+  室内: { icon: Home, color: "text-sky-500" },
+  美食: { icon: UtensilsCrossed, color: "text-amber-500" },
+  冒险: { icon: Rocket, color: "text-violet-500" },
+  其他: { icon: Sparkles, color: "text-orange-500" },
 };
 
 interface RandomizerProps {
@@ -82,9 +82,13 @@ export function Randomizer({ ideas }: RandomizerProps) {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-4xl mb-3"
+                className="mb-3"
               >
-                {typeEmoji[currentIdea.type] ?? "✨"}
+                {(() => {
+                  const typeConfig = typeIcons[currentIdea.type] ?? typeIcons["其他"];
+                  const Icon = typeConfig.icon;
+                  return <Icon size={48} className={cn("mx-auto", typeConfig.color)} />;
+                })()}
               </motion.div>
               <h3 className="font-serif text-xl font-bold text-stone-800 mb-1">
                 {currentIdea.title}
@@ -119,9 +123,13 @@ export function Randomizer({ ideas }: RandomizerProps) {
               exit={{ opacity: 0, y: -10 }}
               className="text-center"
             >
-              <p className="text-3xl mb-2">
-                {typeEmoji[currentIdea.type] ?? "✨"}
-              </p>
+              <div className="mb-2">
+                {(() => {
+                  const typeConfig = typeIcons[currentIdea.type] ?? typeIcons["其他"];
+                  const Icon = typeConfig.icon;
+                  return <Icon size={36} className={cn("mx-auto", typeConfig.color)} />;
+                })()}
+              </div>
               <p className="font-serif text-lg font-semibold text-stone-700">
                 {currentIdea.title}
               </p>

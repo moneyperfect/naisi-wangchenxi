@@ -7,6 +7,7 @@ import { markLetterRead, deleteLetter } from "@/lib/actions";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE } from "@/lib/constants";
 import { Modal } from "@/components/ui/Modal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { NoteForm } from "./NoteForm";
 import type { Letter } from "@/types";
 
@@ -30,6 +31,7 @@ function formatCountdown(target: Date) {
 export function NoteCard({ note }: NoteCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const authorName = note.author === "A" ? COUPLE.partnerA : COUPLE.partnerB;
 
   const isScheduled =
@@ -44,7 +46,6 @@ export function NoteCard({ note }: NoteCardProps) {
   }
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这条心里话吗？")) return;
     try {
       await deleteLetter(note.id);
       toast.success("已删除");
@@ -116,7 +117,7 @@ export function NoteCard({ note }: NoteCardProps) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleDelete();
+                setConfirmOpen(true);
               }}
               className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
             >
@@ -152,6 +153,12 @@ export function NoteCard({ note }: NoteCardProps) {
       >
         <NoteForm initialData={note} onClose={() => setEditOpen(false)} />
       </Modal>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这条心里话吗？删除后无法恢复。"
+      />
     </>
   );
 }

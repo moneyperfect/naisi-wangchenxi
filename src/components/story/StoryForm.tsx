@@ -1,31 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, BookHeart, Clock } from "lucide-react";
+import { Loader2, BookHeart, Clock, Smile, Heart, Frown, HelpCircle, ThumbsUp, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { addDiaryEntry, addTimelineEvent } from "@/lib/actions";
+import { addDiaryEntry, addTimelineEvent, updateDiaryEntry, updateTimelineEvent } from "@/lib/actions";
 import { Button } from "@/components/ui/Button";
 import { COUPLE } from "@/lib/constants";
+import type { StoryItem } from "@/types";
 
 const moods = [
-  { key: "happy", label: "😊" },
-  { key: "love", label: "🥰" },
-  { key: "sad", label: "😢" },
-  { key: "thinking", label: "🤔" },
-  { key: "grateful", label: "🙏" },
-  { key: "excited", label: "🎉" },
+  { key: "happy", label: "开心", icon: Smile },
+  { key: "love", label: "爱你", icon: Heart },
+  { key: "sad", label: "难过", icon: Frown },
+  { key: "thinking", label: "思考", icon: HelpCircle },
+  { key: "grateful", label: "感恩", icon: ThumbsUp },
+  { key: "excited", label: "激动", icon: Sparkles },
 ];
 
 interface StoryFormProps {
   onClose: () => void;
+  initialData?: StoryItem;
 }
 
-export function StoryForm({ onClose }: StoryFormProps) {
-  const [tab, setTab] = useState<"diary" | "milestone">("diary");
+export function StoryForm({ onClose, initialData }: StoryFormProps) {
+  const isEditing = !!initialData;
+  const defaultTab = initialData?.type === "milestone" ? "milestone" : "diary";
+  const [tab, setTab] = useState<"diary" | "milestone">(defaultTab);
   const [loading, setLoading] = useState(false);
-  const [author, setAuthor] = useState("A");
-  const [mood, setMood] = useState("");
+  const [author, setAuthor] = useState(initialData?.type === "diary" ? initialData.author : "A");
+  const [mood, setMood] = useState(initialData?.type === "diary" ? initialData.mood ?? "" : "");
 
   async function handleDiarySubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,8 +39,14 @@ export function StoryForm({ onClose }: StoryFormProps) {
       const content = form.get("content") as string;
       const date =
         (form.get("date") as string) || new Date().toISOString().split("T")[0];
-      await addDiaryEntry({ author, content, mood: mood || undefined, date });
-      toast.success("日记已保存");
+
+      if (isEditing && initialData?.type === "diary") {
+        await updateDiaryEntry(initialData.id, { content, mood: mood || undefined });
+        toast.success("日记已更新");
+      } else {
+        await addDiaryEntry({ author, content, mood: mood || undefined, date });
+        toast.success("日记已保存");
+      }
       onClose();
     } catch {
       toast.error("操作失败，请重试");
@@ -55,8 +65,14 @@ export function StoryForm({ onClose }: StoryFormProps) {
         date: form.get("date") as string,
         description: (form.get("description") as string) || undefined,
       };
-      await addTimelineEvent(data);
-      toast.success("事件已添加");
+
+      if (isEditing && initialData?.type === "milestone") {
+        await updateTimelineEvent(initialData.id, data);
+        toast.success("事件已更新");
+      } else {
+        await addTimelineEvent(data);
+        toast.success("事件已添加");
+      }
       onClose();
     } catch {
       toast.error("操作失败，请重试");
@@ -137,21 +153,25 @@ export function StoryForm({ onClose }: StoryFormProps) {
               今天的心情
             </label>
             <div className="flex gap-2">
-              {moods.map((m) => (
-                <button
-                  key={m.key}
-                  type="button"
-                  onClick={() => setMood(mood === m.key ? "" : m.key)}
-                  className={cn(
-                    "w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all",
-                    mood === m.key
-                      ? "bg-warm-200 scale-110"
-                      : "bg-warm-50 hover:bg-warm-100"
-                  )}
-                >
-                  {m.label}
-                </button>
-              ))}
+              {moods.map((m) => {
+                const Icon = m.icon;
+                return (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => setMood(mood === m.key ? "" : m.key)}
+                    className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                      mood === m.key
+                        ? "bg-warm-200 scale-110 text-warm-600"
+                        : "bg-warm-50 hover:bg-warm-100 text-stone-400"
+                    )}
+                    title={m.label}
+                  >
+                    <Icon size={18} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -162,8 +182,12 @@ export function StoryForm({ onClose }: StoryFormProps) {
             <input
               name="date"
               type="date"
-              defaultValue={new Date().toISOString().split("T")[0]}
-              className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+              defaultValue={
+                isEditing && initialData?.type === "diary"
+                  ? initialData.date
+                  : new Date().toISOString().split("T")[0]
+              }
+              className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
             />
           </div>
 
@@ -175,6 +199,7 @@ export function StoryForm({ onClose }: StoryFormProps) {
               name="content"
               required
               rows={4}
+              defaultValue={initialData?.type === "diary" ? initialData.content : ""}
               placeholder="记录今天的点滴..."
               className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all resize-none"
             />
@@ -190,6 +215,8 @@ export function StoryForm({ onClose }: StoryFormProps) {
                   <Loader2 size={16} className="animate-spin" />
                   处理中...
                 </>
+              ) : isEditing ? (
+                "保存"
               ) : (
                 "记录"
               )}
@@ -208,6 +235,7 @@ export function StoryForm({ onClose }: StoryFormProps) {
             <input
               name="title"
               required
+              defaultValue={initialData?.type === "milestone" ? initialData.title : ""}
               placeholder="如：第一次见面"
               className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
             />
@@ -221,7 +249,11 @@ export function StoryForm({ onClose }: StoryFormProps) {
               name="date"
               type="date"
               required
-              defaultValue={new Date().toISOString().split("T")[0]}
+              defaultValue={
+                initialData?.type === "milestone"
+                  ? initialData.date
+                  : new Date().toISOString().split("T")[0]
+              }
               className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
             />
           </div>
@@ -233,6 +265,7 @@ export function StoryForm({ onClose }: StoryFormProps) {
             <textarea
               name="description"
               rows={3}
+              defaultValue={initialData?.type === "milestone" ? initialData.description ?? "" : ""}
               placeholder="记录这个特别的时刻..."
               className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all resize-none"
             />
@@ -248,6 +281,8 @@ export function StoryForm({ onClose }: StoryFormProps) {
                   <Loader2 size={16} className="animate-spin" />
                   处理中...
                 </>
+              ) : isEditing ? (
+                "保存"
               ) : (
                 "添加"
               )}

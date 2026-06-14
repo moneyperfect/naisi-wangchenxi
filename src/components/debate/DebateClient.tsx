@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE, DEBATE_TOPICS } from "@/lib/constants";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { createDebate, submitDebateArgument, deleteDebate } from "@/lib/actions";
 import type { Debate, DebateArgument } from "@/types";
 
@@ -24,6 +25,8 @@ export function DebateClient({ debates }: DebateClientProps) {
   const [argument, setArgument] = useState("");
   const [author, setAuthor] = useState<"A" | "B">("A");
   const [loading, setLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   async function handleCreateRandom() {
     setLoading(true);
@@ -76,10 +79,10 @@ export function DebateClient({ debates }: DebateClientProps) {
     }
   }
 
-  async function handleDelete(id: number) {
-    if (!window.confirm("确定要删除这个辩题吗？")) return;
+  async function handleDelete() {
+    if (!deleteId) return;
     try {
-      await deleteDebate(id);
+      await deleteDebate(deleteId);
       toast.success("已删除");
       router.refresh();
     } catch {
@@ -173,7 +176,10 @@ export function DebateClient({ debates }: DebateClientProps) {
                       {debate.topic}
                     </h3>
                     <button
-                      onClick={() => handleDelete(debate.id)}
+                      onClick={() => {
+                        setDeleteId(debate.id);
+                        setConfirmOpen(true);
+                      }}
                       className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors"
                     >
                       <X size={14} />
@@ -308,6 +314,12 @@ export function DebateClient({ debates }: DebateClientProps) {
           })}
         </div>
       )}
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这个辩题吗？删除后无法恢复。"
+      />
     </div>
   );
 }

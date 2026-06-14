@@ -7,6 +7,7 @@ import { cn, formatDate } from "@/lib/utils";
 import { COUPLE } from "@/lib/constants";
 import { deleteDiaryEntry, deleteTimelineEvent } from "@/lib/actions";
 import { Modal } from "@/components/ui/Modal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { StoryForm } from "./StoryForm";
 import type { StoryItem } from "@/types";
 
@@ -52,9 +53,9 @@ function DiaryCard({
 }) {
   const authorName = item.author === "A" ? COUPLE.partnerA : COUPLE.partnerB;
   const isA = item.author === "A";
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这篇日记吗？")) return;
     try {
       await deleteDiaryEntry(item.id);
       toast.success("日记已删除");
@@ -99,7 +100,7 @@ function DiaryCard({
               <Pencil size={12} />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={() => setConfirmOpen(true)}
               className="p-1 rounded-full text-stone-400 hover:text-red-400 hover:bg-red-50 transition-colors"
             >
               <Trash2 size={12} />
@@ -108,8 +109,14 @@ function DiaryCard({
         </div>
       </div>
       <Modal isOpen={editOpen} onClose={() => setEditOpen(false)} title="编辑日记">
-        <StoryForm onClose={() => setEditOpen(false)} />
+        <StoryForm onClose={() => setEditOpen(false)} initialData={item} />
       </Modal>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这篇日记吗？删除后无法恢复。"
+      />
     </>
   );
 }
@@ -126,9 +133,9 @@ function MilestoneCard({
   setEditOpen: (v: boolean) => void;
 }) {
   const isLeft = index % 2 === 0;
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这个事件吗？")) return;
     try {
       await deleteTimelineEvent(item.id);
       toast.success("事件已删除");
@@ -164,7 +171,7 @@ function MilestoneCard({
                   <Pencil size={14} />
                 </button>
                 <button
-                  onClick={handleDelete}
+                  onClick={() => setConfirmOpen(true)}
                   className="p-1 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 size={14} />
@@ -178,8 +185,14 @@ function MilestoneCard({
         </div>
       </div>
       <Modal isOpen={editOpen} onClose={() => setEditOpen(false)} title="编辑事件">
-        <StoryForm onClose={() => setEditOpen(false)} />
+        <StoryForm onClose={() => setEditOpen(false)} initialData={item} />
       </Modal>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这个事件吗？删除后无法恢复。"
+      />
     </>
   );
 }

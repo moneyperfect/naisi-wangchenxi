@@ -6,7 +6,7 @@ import { HomeIntro } from "./HomeIntro";
 export default function Home() {
   return (
     <HomeIntro>
-      <div style={{ minHeight: "100dvh" }}>
+      <div className="min-h-dvh">
         <HeroSection />
         <DaysCounter />
         <QuickLinks />

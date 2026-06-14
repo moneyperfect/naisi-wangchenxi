@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { formatDate, getNextOccurrence, daysUntil } from "@/lib/utils";
 import { deleteAnniversary } from "@/lib/actions";
 import { Modal } from "@/components/ui/Modal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { AnniversaryForm } from "./AnniversaryForm";
 import type { Anniversary } from "@/types";
 
@@ -15,13 +16,13 @@ interface AnniversaryCardProps {
 
 export function AnniversaryCard({ item }: AnniversaryCardProps) {
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const next = getNextOccurrence(item.date);
   const days = daysUntil(next.toISOString());
   const isPast = days < 0;
   const isToday = days === 0;
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这个纪念日吗？")) return;
     try {
       await deleteAnniversary(item.id);
       toast.success("纪念日已删除");
@@ -68,7 +69,7 @@ export function AnniversaryCard({ item }: AnniversaryCardProps) {
                 <Pencil size={14} />
               </button>
               <button
-                onClick={handleDelete}
+                onClick={() => setConfirmOpen(true)}
                 className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors"
               >
                 <Trash2 size={14} />
@@ -87,6 +88,12 @@ export function AnniversaryCard({ item }: AnniversaryCardProps) {
           onClose={() => setEditOpen(false)}
         />
       </Modal>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这个纪念日吗？删除后无法恢复。"
+      />
     </>
   );
 }

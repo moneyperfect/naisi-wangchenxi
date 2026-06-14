@@ -6,6 +6,7 @@ import { Loader2, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { deletePhoto, updatePhotoCaption } from "@/lib/actions";
 import { Modal } from "@/components/ui/Modal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import type { Photo } from "@/types";
 
 interface PhotoCardProps {
@@ -18,6 +19,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
   const [captionDraft, setCaptionDraft] = useState(photo.caption ?? "");
   const [editOpen, setEditOpen] = useState(false);
   const [savingCaption, setSavingCaption] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -38,8 +40,6 @@ export function PhotoCard({ photo }: PhotoCardProps) {
   }, [lightbox]);
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这张照片吗？")) return;
-
     try {
       await deletePhoto(photo.id);
       toast.success("照片已删除");
@@ -162,7 +162,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
         <button
           onClick={(event) => {
             event.stopPropagation();
-            handleDelete();
+            setConfirmOpen(true);
           }}
           className="absolute right-2 top-2 rounded-full bg-stone-900/30 p-1.5 text-white opacity-100  transition hover:bg-red-500/80 sm:opacity-0 sm:group-hover:opacity-100"
         >
@@ -208,6 +208,12 @@ export function PhotoCard({ photo }: PhotoCardProps) {
           </div>
         </div>
       </Modal>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这张照片吗？删除后无法恢复。"
+      />
     </>
   );
 }

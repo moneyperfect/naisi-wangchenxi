@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { toggleLockDateIdea, deleteDateIdea } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { COUPLE } from "@/lib/constants";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import type { DateIdea } from "@/types";
 
 const typeColors: Record<string, string> = {
@@ -23,6 +24,7 @@ interface IdeaCardProps {
 export function IdeaCard({ idea }: IdeaCardProps) {
   const [pending, setPending] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [me, setMe] = useState(COUPLE.partnerA);
 
   useEffect(() => {
@@ -45,7 +47,6 @@ export function IdeaCard({ idea }: IdeaCardProps) {
   }
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这个约会点子吗？")) return;
     setDeleting(true);
     try {
       await deleteDateIdea(idea.id);
@@ -114,7 +115,7 @@ export function IdeaCard({ idea }: IdeaCardProps) {
             )}
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => setConfirmOpen(true)}
             disabled={deleting}
             className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors"
             title="删除"
@@ -132,6 +133,12 @@ export function IdeaCard({ idea }: IdeaCardProps) {
           {idea.lockedBy} 锁定了这个点子
         </p>
       )}
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这个约会点子吗？删除后无法恢复。"
+      />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { toggleWishlistItem, deleteWishlistItem } from "@/lib/actions";
 import { COUPLE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import type { Wishlist } from "@/types";
 
 const categoryColors: Record<string, string> = {
@@ -23,6 +24,7 @@ interface WishlistCardProps {
 export function WishlistCard({ item }: WishlistCardProps) {
   const [completedBy, setCompletedBy] = useState<"A" | "B">("A");
   const [loading, setLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleToggle() {
     setLoading(true);
@@ -39,7 +41,6 @@ export function WishlistCard({ item }: WishlistCardProps) {
   }
 
   async function handleDelete() {
-    if (!window.confirm("确定要删除这个心愿吗？")) return;
     try {
       await deleteWishlistItem(item.id);
       toast.success("已删除");
@@ -116,11 +117,17 @@ export function WishlistCard({ item }: WishlistCardProps) {
 
       {/* Delete button */}
       <button
-        onClick={handleDelete}
+        onClick={() => setConfirmOpen(true)}
         className="absolute top-2 right-2 p-1.5 rounded-full text-stone-300 hover:text-rose-500 hover:bg-rose-50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
       >
         <Trash2 size={14} />
       </button>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删除这个心愿吗？删除后无法恢复。"
+      />
     </motion.div>
   );
 }

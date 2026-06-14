@@ -1,78 +1,36 @@
-import Link from "next/link";
-import {
-  BookOpen,
-  CalendarHeart,
-  Image,
-  MessageCircleHeart,
-  Sparkles,
-  MoreHorizontal,
-} from "lucide-react";
+"use client";
 
-const links = [
-  {
-    href: "/story",
-    icon: BookOpen,
-    title: "我们的故事",
-    desc: "日常与重要节点",
-    color: "bg-warm-50 text-warm-500",
-  },
-  {
-    href: "/anniversary",
-    icon: CalendarHeart,
-    title: "纪念日",
-    desc: "重要的日子",
-    color: "bg-rose-50 text-rose-500",
-  },
-  {
-    href: "/album",
-    icon: Image,
-    title: "相册",
-    desc: "美好瞬间",
-    color: "bg-amber-50 text-amber-500",
-  },
-  {
-    href: "/notes",
-    icon: MessageCircleHeart,
-    title: "心里话",
-    desc: "想对你说",
-    color: "bg-sky-50 text-sky-500",
-  },
-  {
-    href: "/wishlist",
-    icon: Sparkles,
-    title: "心愿清单",
-    desc: "想一起做的事",
-    color: "bg-violet-50 text-violet-500",
-  },
-  {
-    href: "/more",
-    icon: MoreHorizontal,
-    title: "更多",
-    desc: "辩论·挑战·游戏",
-    color: "bg-emerald-50 text-emerald-500",
-  },
+import Link from "next/link";
+import { Image, BookOpen, HelpCircle, MoreHorizontal, Heart, Dices } from "lucide-react";
+
+const quickLinks = [
+  { href: "/album", label: "相册", icon: Image, color: "bg-pink-100 text-pink-500" },
+  { href: "/rant", label: "倾诉", icon: BookOpen, color: "bg-blue-100 text-blue-500" },
+  { href: "/daily", label: "今日一问", icon: HelpCircle, color: "bg-emerald-100 text-emerald-500" },
+  { href: "/more", label: "更多", icon: MoreHorizontal, color: "bg-stone-100 text-stone-500" },
+  { href: "/wishlist", label: "心愿", icon: Heart, color: "bg-orange-100 text-orange-500" },
+  { href: "/date-idea", label: "约会", icon: Dices, color: "bg-purple-100 text-purple-500" },
 ];
 
 export function QuickLinks() {
   return (
-    <div className="px-4 py-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-md mx-auto">
-        {links.map(({ href, icon: Icon, title, desc, color }) => (
-          <Link
-            key={href}
-            href={href}
-            className="group bg-white/60 rounded-3xl p-5 border border-warm-200/30 hover:border-warm-300/50 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
-          >
-            <div className={`inline-flex p-2.5 rounded-xl ${color} mb-3`}>
-              <Icon size={20} />
-            </div>
-            <h3 className="font-serif font-semibold text-stone-800 text-sm">
-              {title}
-            </h3>
-            <p className="text-xs text-stone-400 mt-0.5">{desc}</p>
-          </Link>
-        ))}
+    <section className="px-4 py-6">
+      <h2 className="font-serif text-xl font-semibold text-stone-800 mb-4">快速入口</h2>
+      <div className="grid grid-cols-3 gap-3">
+        {quickLinks.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex flex-col items-center justify-center gap-2 rounded-2xl p-3 transition-all hover:scale-105 active:scale-95 min-w-[44px] min-h-[44px] ${link.color}`}
+            >
+              <Icon size={24} />
+              <span className="text-sm font-medium">{link.label}</span>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 }

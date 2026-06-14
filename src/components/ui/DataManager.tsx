@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { Download, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ConfirmModal } from "./ConfirmModal";
 
 const STORAGE_KEYS: string[] = [];
 
 export function DataManager() {
   const [importing, setImporting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   function handleExport() {
     const data: Record<string, unknown> = {};
@@ -68,7 +70,6 @@ export function DataManager() {
   }
 
   function handleClear() {
-    if (!window.confirm("确定要清除所有本地数据吗？此操作不可撤销。")) return;
     for (const key of STORAGE_KEYS) {
       localStorage.removeItem(key);
     }
@@ -97,13 +98,19 @@ export function DataManager() {
           导入
         </button>
         <button
-          onClick={handleClear}
+          onClick={() => setConfirmOpen(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50 active:scale-95 transition-all"
         >
           <Trash2 size={14} />
           清除
         </button>
       </div>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleClear}
+        message="确定要清除所有本地数据吗？此操作不可撤销。"
+      />
     </div>
   );
 }

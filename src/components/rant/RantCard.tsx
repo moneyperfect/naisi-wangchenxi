@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Trash2, Check, Swords } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { COUPLE } from "@/lib/constants";
 import { deleteRant, acknowledgeRant } from "@/lib/actions";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import type { Rant } from "@/types";
 
 const categoryLabels: Record<string, string> = {
@@ -23,9 +25,9 @@ const categoryColors: Record<string, string> = {
 
 export function RantCard({ rant }: { rant: Rant }) {
   const authorName = rant.author === "A" ? COUPLE.partnerA : COUPLE.partnerB;
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm("确定要删掉这条吐槽吗？")) return;
     try {
       await deleteRant(rant.id);
       toast.success("已删除");
@@ -94,12 +96,18 @@ export function RantCard({ rant }: { rant: Rant }) {
           </button>
         )}
         <button
-          onClick={handleDelete}
+          onClick={() => setConfirmOpen(true)}
           className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         >
           <Trash2 size={14} />
         </button>
       </div>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        message="确定要删掉这条吐槽吗？删除后无法恢复。"
+      />
     </div>
   );
 }

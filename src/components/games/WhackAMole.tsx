@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, Trophy, RotateCcw, Flame } from "lucide-react";
+import { Heart, Trophy, RotateCcw, Flame, Frown, Meh, Smile } from "lucide-react";
 import { toast } from "sonner";
 import { COUPLE, WHACK_ROASTS, GAME_REVIEWS } from "@/lib/constants";
 import { saveWhackAMoleBestScore } from "@/lib/actions";
@@ -133,10 +133,12 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
       setScore(scoreRef.current);
       setHitAnim((current) => [...current, pos]);
 
-      // Show roast toast
-      const opponent = player === "playerA" ? COUPLE.partnerB : COUPLE.partnerA;
-      const roast = WHACK_ROASTS[Math.floor(Math.random() * WHACK_ROASTS.length)].replace("{name}", opponent);
-      toast(roast, { duration: 1500 });
+      // Show roast toast every 5 hits to avoid spam
+      if (scoreRef.current % 5 === 0) {
+        const opponent = player === "playerA" ? COUPLE.partnerB : COUPLE.partnerA;
+        const roast = WHACK_ROASTS[Math.floor(Math.random() * WHACK_ROASTS.length)].replace("{name}", opponent);
+        toast(roast, { duration: 1500 });
+      }
 
       setTimeout(() => {
         setHitAnim((current) => current.filter((item) => item !== pos));
@@ -230,9 +232,9 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
   if (phase === "result") {
     const review = GAME_REVIEWS.find((r) => score >= r.min && score <= r.max) || GAME_REVIEWS[0];
     const ReviewIcon = {
-      Frown: () => <span className="text-stone-400">...</span>,
-      Meh: () => <span className="text-stone-400">--</span>,
-      Smile: () => <span className="text-warm-400">+1</span>,
+      Frown: () => <Frown size={20} className="text-stone-400" />,
+      Meh: () => <Meh size={20} className="text-stone-400" />,
+      Smile: () => <Smile size={20} className="text-warm-400" />,
       Flame: () => <Flame size={20} className="text-orange-500" />,
       Trophy: () => <Trophy size={20} className="text-amber-500" />,
     }[review.icon] || (() => null);
