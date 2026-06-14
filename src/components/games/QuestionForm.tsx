@@ -55,7 +55,7 @@ export function QuestionForm({ onClose }: { onClose: () => void }) {
         <input
           name="question"
           placeholder="例如：我最喜欢的食物是？"
-          className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-warm-300"
+          className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-base focus:outline-none focus:ring-2 focus:ring-warm-300"
           required
         />
       </div>
@@ -67,7 +67,7 @@ export function QuestionForm({ onClose }: { onClose: () => void }) {
             <input
               name={`option${label}`}
               placeholder={`选项 ${label}`}
-              className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-warm-300"
+              className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-base focus:outline-none focus:ring-2 focus:ring-warm-300"
               required={label === "A" || label === "B"}
             />
           </div>

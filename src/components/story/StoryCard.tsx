@@ -91,7 +91,7 @@ function DiaryCard({
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
             {item.content}
           </p>
-          <div className="flex items-center gap-2 mt-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-2 mt-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => setEditOpen(true)}
               className="p-1 rounded-full text-stone-400 hover:text-warm-500 hover:bg-warm-200/50 transition-colors"
@@ -156,7 +156,7 @@ function MilestoneCard({
                   {item.title}
                 </h3>
               </div>
-              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
+              <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                 <button
                   onClick={() => setEditOpen(true)}
                   className="p-1 rounded-full text-stone-300 hover:text-warm-500 hover:bg-warm-100 transition-colors"

@@ -109,7 +109,7 @@ export function NoteCard({ note }: NoteCardProps) {
                 e.stopPropagation();
                 setEditOpen(true);
               }}
-              className="p-1.5 rounded-full text-stone-300 hover:text-warm-500 hover:bg-warm-100 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"
+              className="p-1.5 rounded-full text-stone-300 hover:text-warm-500 hover:bg-warm-100 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
             >
               <Pencil size={14} />
             </button>
@@ -118,7 +118,7 @@ export function NoteCard({ note }: NoteCardProps) {
                 e.stopPropagation();
                 handleDelete();
               }}
-              className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"
+              className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
             >
               <Trash2 size={14} />
             </button>

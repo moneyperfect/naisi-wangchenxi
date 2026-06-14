@@ -55,7 +55,7 @@ export function IdeaForm({ onClose }: IdeaFormProps) {
           name="title"
           required
           placeholder="如：一起去野餐"
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
         />
       </div>
       <div>
@@ -87,7 +87,7 @@ export function IdeaForm({ onClose }: IdeaFormProps) {
         <input
           name="location"
           placeholder="如：公园、家里"
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
         />
       </div>
       <div>
@@ -97,7 +97,7 @@ export function IdeaForm({ onClose }: IdeaFormProps) {
         <input
           name="duration"
           placeholder="如：2小时、半天"
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
         />
       </div>
       <div className="flex gap-3 pt-2">

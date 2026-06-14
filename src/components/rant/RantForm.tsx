@@ -109,7 +109,7 @@ export function RantForm({ onClose }: { onClose: () => void }) {
         rows={4}
         placeholder={level === "rage" ? "今天不吐不快！！！" : "有什么想吐槽的..."}
         className={cn(
-          "w-full px-4 py-3 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-warm-300 focus:border-transparent",
+          "w-full px-4 py-3 rounded-2xl text-base resize-none focus:outline-none focus:ring-2 focus:ring-warm-300 focus:border-transparent",
           level === "rage"
             ? "bg-red-50 border-red-200"
             : level === "shout"

@@ -314,7 +314,7 @@ export function WhackAMole({ bestA, bestB, onScoreSaved }: WhackAMoleProps) {
 
       {/* 4x4 Grid */}
       <div
-        className="grid gap-2.5 mx-auto max-w-xs"
+        className="grid gap-2.5 mx-auto max-w-xs touch-manipulation"
         style={{ gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))` }}
       >
         {Array.from({ length: GRID_SIZE }).map((_, i) => {

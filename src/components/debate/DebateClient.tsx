@@ -122,20 +122,20 @@ export function DebateClient({ debates }: DebateClientProps) {
             name="topic"
             required
             placeholder="辩题（如：甜粽子 vs 咸粽子）"
-            className="w-full px-4 py-2.5 rounded-xl bg-white border border-amber-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
+            className="w-full px-4 py-2.5 rounded-xl bg-white border border-amber-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
           />
           <div className="grid grid-cols-2 gap-3">
             <input
               name="optionA"
               required
               placeholder="选项A"
-              className="px-4 py-2.5 rounded-xl bg-white border border-amber-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
+              className="px-4 py-2.5 rounded-xl bg-white border border-amber-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
             />
             <input
               name="optionB"
               required
               placeholder="选项B"
-              className="px-4 py-2.5 rounded-xl bg-white border border-amber-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
+              className="px-4 py-2.5 rounded-xl bg-white border border-amber-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
             />
           </div>
           <button
@@ -275,7 +275,7 @@ export function DebateClient({ debates }: DebateClientProps) {
                       <select
                         value={author}
                         onChange={(e) => setAuthor(e.target.value as "A" | "B")}
-                        className="px-3 py-2 rounded-xl bg-white border border-amber-200 text-sm text-stone-600 focus:outline-none"
+                        className="px-3 py-2 rounded-xl bg-white border border-amber-200 text-base text-stone-600 focus:outline-none"
                       >
                         <option value="A">{COUPLE.partnerA}</option>
                         <option value="B">{COUPLE.partnerB}</option>
@@ -284,7 +284,7 @@ export function DebateClient({ debates }: DebateClientProps) {
                         value={argument}
                         onChange={(e) => setArgument(e.target.value)}
                         placeholder="写下你的论点..."
-                        className="flex-1 px-4 py-2 rounded-xl bg-white border border-amber-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
+                        className="flex-1 px-4 py-2 rounded-xl bg-white border border-amber-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-amber-400 transition-all"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();

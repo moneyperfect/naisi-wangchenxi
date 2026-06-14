@@ -44,7 +44,6 @@ export const viewport: Viewport = {
   themeColor: "#ff6b4a",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: "cover",
 };
 
@@ -55,7 +54,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN" className={`${serif.variable} ${sans.variable}`}>
-      <body className="bg-cream font-sans" style={{ minHeight: "100dvh" }}>
+      <body className="bg-stone-50 font-sans min-h-dvh touch-manipulation">
         <FloatingHearts />
         <main className="pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">{children}</main>
         <InitialLoadingOverlay />

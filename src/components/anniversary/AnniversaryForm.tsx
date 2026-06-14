@@ -54,7 +54,7 @@ export function AnniversaryForm({ onClose, initialData }: AnniversaryFormProps) 
           required
           defaultValue={initialData?.title}
           placeholder="如：在一起纪念日"
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
         />
       </div>
       <div>
@@ -66,7 +66,7 @@ export function AnniversaryForm({ onClose, initialData }: AnniversaryFormProps) 
           type="date"
           required
           defaultValue={initialData?.date}
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
         />
       </div>
       <div>
@@ -78,7 +78,7 @@ export function AnniversaryForm({ onClose, initialData }: AnniversaryFormProps) 
           rows={2}
           defaultValue={initialData?.description ?? ""}
           placeholder="记录一些细节..."
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all resize-none"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all resize-none"
         />
       </div>
       <div className="flex gap-3 pt-2">

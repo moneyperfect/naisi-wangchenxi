@@ -117,7 +117,7 @@ export function WishlistCard({ item }: WishlistCardProps) {
       {/* Delete button */}
       <button
         onClick={handleDelete}
-        className="absolute top-2 right-2 p-1.5 rounded-full text-stone-300 hover:text-rose-500 hover:bg-rose-50 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
+        className="absolute top-2 right-2 p-1.5 rounded-full text-stone-300 hover:text-rose-500 hover:bg-rose-50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
       >
         <Trash2 size={14} />
       </button>

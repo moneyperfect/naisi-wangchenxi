@@ -93,7 +93,7 @@ export function NoteForm({ onClose, initialData }: NoteFormProps) {
           name="title"
           defaultValue={initialData?.title ?? ""}
           placeholder="给这条消息起个名字？"
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
         />
       </div>
       <div>
@@ -106,7 +106,7 @@ export function NoteForm({ onClose, initialData }: NoteFormProps) {
           rows={4}
           defaultValue={initialData?.content}
           placeholder="想说什么就说，不用太长..."
-          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all resize-none"
+          className="w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all resize-none"
         />
       </div>
       {!isEditing && (
@@ -134,7 +134,7 @@ export function NoteForm({ onClose, initialData }: NoteFormProps) {
             <input
               type="datetime-local"
               name="scheduledAt"
-              className="mt-2 w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
+              className="mt-2 w-full px-4 py-2.5 rounded-xl bg-white border border-warm-200 text-base text-stone-800 focus:outline-none focus:border-warm-400 focus:ring-2 focus:ring-warm-200 transition-all"
             />
           )}
         </div>

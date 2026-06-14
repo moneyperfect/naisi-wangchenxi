@@ -60,7 +60,7 @@ export function AnniversaryCard({ item }: AnniversaryCardProps) {
                 <span className="text-xs text-stone-400 ml-1">天后</span>
               </div>
             )}
-            <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => setEditOpen(true)}
                 className="p-1.5 rounded-full text-stone-300 hover:text-warm-500 hover:bg-warm-100 transition-colors"

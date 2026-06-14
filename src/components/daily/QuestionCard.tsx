@@ -59,7 +59,7 @@ export function QuestionCard({ question, onSubmit, submitting, hasOneAnswer }: Q
         onChange={(e) => setAnswer(e.target.value)}
         placeholder="写下你的答案..."
         rows={4}
-        className="w-full bg-warm-50 rounded-2xl p-4 text-sm text-stone-700 placeholder:text-stone-300 border border-warm-200/50 focus:outline-none focus:ring-2 focus:ring-warm-300 resize-none mb-4"
+        className="w-full bg-warm-50 rounded-2xl p-4 text-base text-stone-700 placeholder:text-stone-300 border border-warm-200/50 focus:outline-none focus:ring-2 focus:ring-warm-300 resize-none mb-4"
       />
 
       <Button

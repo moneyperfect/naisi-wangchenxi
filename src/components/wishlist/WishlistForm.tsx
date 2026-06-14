@@ -51,7 +51,7 @@ export function WishlistForm({ onClose }: WishlistFormProps) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="想一起做的事情..."
-          className="w-full rounded-2xl bg-warm-100/60 border border-warm-200/50 px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-warm-400/40"
+          className="w-full rounded-2xl bg-warm-100/60 border border-warm-200/50 px-4 py-3 text-base text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-warm-400/40"
           required
         />
       </div>

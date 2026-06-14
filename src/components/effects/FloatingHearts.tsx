@@ -29,7 +29,13 @@ export function FloatingHearts() {
   }, [pathname]);
 
   const particles = useMemo(() => {
-    return Array.from({ length: 6 }, (_, i) => ({
+    // Reduce particles on low-end devices (check for reduced motion preference)
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const count = prefersReducedMotion ? 0 : 6;
+
+    return Array.from({ length: count }, (_, i) => ({
       id: i,
       left: `${seededRandom(i * 7 + 1) * 80 + 10}%`,
       delay: `${seededRandom(i * 13 + 3) * 10}s`,
@@ -43,7 +49,7 @@ export function FloatingHearts() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" style={{ willChange: "transform" }}>
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" style={{ willChange: "transform", contain: "strict" }}>
       {particles.map((p) => (
         <div
           key={p.id}

@@ -198,7 +198,7 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
                     value={item.caption}
                     onChange={(e) => updateCaption(item.id, e.target.value)}
                     placeholder="写点备注..."
-                    className="mt-1 w-full min-w-0 rounded-lg border border-warm-200/50 bg-warm-50 px-2 py-1 text-xs transition-all focus:border-warm-400 focus:outline-none"
+                    className="mt-1 w-full min-w-0 rounded-lg border border-warm-200/50 bg-warm-50 px-2 py-1 text-sm transition-all focus:border-warm-400 focus:outline-none"
                   />
                 </div>
                 {item.status === "done" ? (

@@ -23,16 +23,14 @@ export function PhotoCard({ photo }: PhotoCardProps) {
     if (!lightbox) return;
 
     const scrollY = window.scrollY;
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
 
     return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
+      document.body.style.touchAction = "";
       requestAnimationFrame(() => {
         window.scrollTo(0, scrollY);
       });
@@ -185,7 +183,7 @@ export function PhotoCard({ photo }: PhotoCardProps) {
             onChange={(event) => setCaptionDraft(event.target.value)}
             placeholder="写下这张照片里的小故事..."
             rows={6}
-            className="max-h-[38vh] min-h-32 w-full resize-y rounded-2xl border border-warm-200 bg-cream px-4 py-3 text-sm leading-6 text-stone-700 placeholder:text-stone-300 focus:border-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-200"
+            className="max-h-[38vh] min-h-32 w-full resize-y rounded-2xl border border-warm-200 bg-cream px-4 py-3 text-base leading-6 text-stone-700 placeholder:text-stone-300 focus:border-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-200"
           />
           <div className="flex gap-3">
             <button
