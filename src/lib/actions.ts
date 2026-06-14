@@ -419,18 +419,45 @@ export async function deleteWishlistItem(id: number) {
 // Daily Question
 export async function getTodaysQuestion() {
   const sb = createServerClient();
+  // Get the latest question
   const { data, error } = await sb
     .from("DailyQuestion")
     .select("*")
-    .order("id", { ascending: true });
+    .order("id", { ascending: false })
+    .limit(1);
   if (error) throw error;
   if (!data || data.length === 0) return null;
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
-      86400000
-  );
-  const idx = dayOfYear % data.length;
-  return { ...data[idx], createdAt: toDate(data[idx].createdAt) };
+
+  const question = data[0];
+  // Check if both have answered
+  const { data: answers } = await sb
+    .from("DailyAnswer")
+    .select("author")
+    .eq("questionId", question.id);
+
+  const authors = new Set((answers ?? []).map((a) => a.author));
+  // If both answered, return null (need a new question)
+  if (authors.size >= 2) return null;
+
+  return { ...question, createdAt: toDate(question.createdAt) };
+}
+
+export async function createDailyQuestion(question: string) {
+  const sb = createServerClient();
+  const { error } = await sb
+    .from("DailyQuestion")
+    .insert({ question });
+  if (error) throw error;
+  revalidatePath("/daily");
+}
+
+export async function deleteDailyQuestion(id: number) {
+  const sb = createServerClient();
+  // Delete answers first
+  await sb.from("DailyAnswer").delete().eq("questionId", id);
+  const { error } = await sb.from("DailyQuestion").delete().eq("id", id);
+  if (error) throw error;
+  revalidatePath("/daily");
 }
 
 export async function getDailyAnswers(questionId: number) {
