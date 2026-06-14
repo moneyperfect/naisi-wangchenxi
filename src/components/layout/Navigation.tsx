@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Heart, BookOpen, Music, MoreHorizontal } from "lucide-react";
+import { Home, HelpCircle, BookOpen, Image, MoreHorizontal } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "首页", icon: Home },
   { href: "/rant", label: "倾诉", icon: BookOpen },
-  { href: "/love", label: "爱情", icon: Heart },
-  { href: "/music", label: "音乐", icon: Music },
+  { href: "/daily", label: "今日一问", icon: HelpCircle },
+  { href: "/album", label: "相册", icon: Image },
   { href: "/more", label: "更多", icon: MoreHorizontal },
 ];
 
