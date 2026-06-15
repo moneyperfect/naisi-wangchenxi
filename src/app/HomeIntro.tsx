@@ -22,14 +22,14 @@ export function HomeIntro({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const shouldAutoPlay =
       sessionStorage.getItem("intro-autoplay") === "1" ||
-      consumeCookie("intro_autoplay");
+      consumeCookie("intro-autoplay");
 
     if (shouldAutoPlay) {
       sessionStorage.removeItem("intro-autoplay");
       sessionStorage.removeItem("skip-next-app-loading");
       sessionStorage.removeItem("skip-next-route-loading");
-      consumeCookie("skip_next_app_loading");
-      consumeCookie("skip_next_route_loading");
+      consumeCookie("skip-next-app-loading");
+      consumeCookie("skip-next-route-loading");
       setAutoPlayIntro(true);
       setSkip(false);
       return;

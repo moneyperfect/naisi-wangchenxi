@@ -29,11 +29,13 @@ export function InitialLoadingOverlay() {
 
     if (pathname === "/gate") return;
 
+    // 跳过条件：有 skip 标记，或入场动画已完成
     const shouldSkip =
       sessionStorage.getItem("skip-next-route-loading") === "1" ||
       sessionStorage.getItem("skip-next-app-loading") === "1" ||
-      consumeCookie("skip_next_route_loading") ||
-      consumeCookie("skip_next_app_loading");
+      sessionStorage.getItem("intro-seen") === "1" ||
+      consumeCookie("skip-next-route-loading") ||
+      consumeCookie("skip-next-app-loading");
 
     if (shouldSkip) {
       sessionStorage.removeItem("skip-next-route-loading");

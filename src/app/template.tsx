@@ -8,6 +8,7 @@ export default function Template({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isFirstRender = useRef(true);
   const [transitioning, setTransitioning] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -20,19 +21,35 @@ export default function Template({ children }: { children: ReactNode }) {
       return;
     }
 
+    // 淡入 → 短暂显示 → 淡出
+    setVisible(true);
     setTransitioning(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => setTransitioning(false));
-    });
+
+    const fadeOutTimer = setTimeout(() => {
+      setTransitioning(false);
+    }, 150);
+
+    const hideTimer = setTimeout(() => {
+      setVisible(false);
+    }, 300);
+
+    return () => {
+      clearTimeout(fadeOutTimer);
+      clearTimeout(hideTimer);
+    };
   }, [pathname]);
+
+  if (!visible) {
+    return <div className="relative">{children}</div>;
+  }
 
   return (
     <>
       <div className="relative">{children}</div>
-
-      {transitioning && (
-        <div className="fixed inset-0 z-[60] pointer-events-none bg-cream" />
-      )}
+      <div
+        className="fixed inset-0 z-[60] pointer-events-none bg-cream transition-opacity duration-150"
+        style={{ opacity: transitioning ? 1 : 0 }}
+      />
     </>
   );
 }

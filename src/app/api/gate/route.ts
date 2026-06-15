@@ -35,14 +35,14 @@ function setAuthCookies(res: NextResponse, password: string, from: string) {
       path: "/",
     });
 
-    res.cookies.set("skip_next_app_loading", "1", {
+    res.cookies.set("skip-next-app-loading", "1", {
       secure: isProd,
       sameSite: "lax",
       maxAge: 60,
       path: "/",
     });
 
-    res.cookies.set("skip_next_route_loading", "1", {
+    res.cookies.set("skip-next-route-loading", "1", {
       secure: isProd,
       sameSite: "lax",
       maxAge: 60,
@@ -50,7 +50,7 @@ function setAuthCookies(res: NextResponse, password: string, from: string) {
     });
 
     if (from === "/") {
-      res.cookies.set("intro_autoplay", "1", {
+      res.cookies.set("intro-autoplay", "1", {
         secure: isProd,
         sameSite: "lax",
         maxAge: 60,
