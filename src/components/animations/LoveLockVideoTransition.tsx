@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const INTRO_VIDEO_SRC = "/animations/intro.mp4";
+const INTRO_FALLBACK_MS = 2400;
 
 type PageTransitionProps = {
   children: ReactNode;
@@ -14,25 +15,40 @@ type PageTransitionProps = {
 
 type Stage = "locked" | "unlocking" | "unlocked";
 
-function getInitialAllowsMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 export function LoveLockVideoTransition({
   children,
   autoPlay = false,
   onAnimationComplete,
 }: PageTransitionProps) {
-  const allowsMotion = getInitialAllowsMotion();
-  const [stage, setStage] = useState<Stage>(allowsMotion ? "locked" : "unlocked");
+  const [allowsMotion, setAllowsMotion] = useState(false);
+  const [motionPreferenceKnown, setMotionPreferenceKnown] = useState(false);
+  const [stage, setStage] = useState<Stage>("locked");
   const videoRef = useRef<HTMLVideoElement>(null);
-  const motionPreferenceKnown = true;
+  const completedRef = useRef(false);
 
-  function completeIntro() {
+  const completeIntro = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
     setStage("unlocked");
     onAnimationComplete?.();
-  }
+  }, [onAnimationComplete]);
+
+  useEffect(() => {
+    const canPlayMotion = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setAllowsMotion(canPlayMotion);
+    setMotionPreferenceKnown(true);
+
+    if (!canPlayMotion) {
+      completeIntro();
+    }
+  }, [completeIntro]);
+
+  useEffect(() => {
+    if (stage !== "unlocking") return;
+
+    const timer = window.setTimeout(completeIntro, INTRO_FALLBACK_MS);
+    return () => window.clearTimeout(timer);
+  }, [completeIntro, stage]);
 
   function handleStartUnlocking() {
     if (stage !== "locked") return;
